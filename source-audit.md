@@ -163,6 +163,6 @@ Implementation may start only after:
 - [x] unsafe/site-specific material is enumerated;
 - [x] reference projects are researched;
 - [x] the feature matrix fixes the v1 scope;
-- [ ] implementation is built in a separate temporary directory;
-- [ ] only reviewed final files are written to `oyjq0000/AstroPublishKit`;
-- [ ] repository history is verified to be independent of `runningbai-blog`.
+- [x] implementation is built in a separate temporary directory;
+- [x] only reviewed final files are written to `oyjq0000/AstroPublishKit`;
+- [x] repository history is verified to be independent of `runningbai-blog`.
