@@ -17,7 +17,11 @@ function relative(file) {
 }
 
 function postSlug(file) {
-  return path.relative(postsDir, file).replace(/\.(md|mdx)$/i, "").split(path.sep).join("/");
+  return path
+    .relative(postsDir, file)
+    .replace(/\.(md|mdx)$/i, "")
+    .split(path.sep)
+    .join("/");
 }
 
 function main() {

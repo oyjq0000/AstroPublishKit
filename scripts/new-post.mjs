@@ -83,9 +83,7 @@ async function askDescription(rl) {
   while (true) {
     const value = await askRequired(rl, "Description");
     if (value.length >= POST_DESCRIPTION_MIN_LENGTH && value.length <= POST_DESCRIPTION_MAX_LENGTH) return value;
-    console.error(
-      `✗ Description must be ${POST_DESCRIPTION_MIN_LENGTH}-${POST_DESCRIPTION_MAX_LENGTH} characters.`,
-    );
+    console.error(`✗ Description must be ${POST_DESCRIPTION_MIN_LENGTH}-${POST_DESCRIPTION_MAX_LENGTH} characters.`);
   }
 }
 

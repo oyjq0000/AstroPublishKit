@@ -8,8 +8,7 @@ export const POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH = 50;
 export const POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH = 160;
 export const DEFAULT_POST_CATEGORY = "General";
 export const DEFAULT_POST_LANG = "en";
-export const DEFAULT_POST_DESCRIPTION =
-  "Replace this description with a useful summary of at least twenty characters.";
+export const DEFAULT_POST_DESCRIPTION = "Replace this description with a useful summary of at least twenty characters.";
 export const POST_EXTENSIONS = ["md", "mdx"];
 
 function requiredText(value, label) {
@@ -97,9 +96,7 @@ export function createPostFrontmatter(options = {}) {
     throw new Error(`Title must be ${POST_TITLE_MIN_LENGTH}-${POST_TITLE_MAX_LENGTH} characters.`);
   }
   if (description.length < POST_DESCRIPTION_MIN_LENGTH || description.length > POST_DESCRIPTION_MAX_LENGTH) {
-    throw new Error(
-      `Description must be ${POST_DESCRIPTION_MIN_LENGTH}-${POST_DESCRIPTION_MAX_LENGTH} characters.`,
-    );
+    throw new Error(`Description must be ${POST_DESCRIPTION_MIN_LENGTH}-${POST_DESCRIPTION_MAX_LENGTH} characters.`);
   }
 
   const lines = [

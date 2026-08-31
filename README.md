@@ -189,19 +189,19 @@ No additional preview wrapper is required; these two existing modes have distinc
 
 `npm run check` is the single local and CI release gate.
 
-| Check | Purpose |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript correctness |
-| `npm run lint` | ESLint for JS, MJS, TS and Astro |
-| `npm run format:check` | Prettier verification without modifying files |
-| `npm run test` | URL, content, taxonomy, authoring, text and SEO regression tests |
-| `npm run check:config` | generic site/config/integration validation |
-| `npm run check:content` | content conventions, taxonomy safety and editorial feedback |
-| `npm run build` | final static output + Pagefind index |
-| `npm run check:links` | offline validation of generated internal page links |
-| `npm run check:sitemap` | sitemap origin, pages, exclusions, duplicates and `lastmod` |
-| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
-| `npm run check:template` | fake-user build and generated-site identity residue scan |
+| Check                    | Purpose                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript correctness                                    |
+| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                  |
+| `npm run format:check`   | Prettier verification without modifying files                     |
+| `npm run test`           | URL, content, taxonomy, authoring, text and SEO regression tests  |
+| `npm run check:config`   | generic site/config/integration validation                        |
+| `npm run check:content`  | content conventions, taxonomy safety and editorial feedback       |
+| `npm run build`          | final static output + Pagefind index                              |
+| `npm run check:links`    | offline validation of generated internal page links               |
+| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
+| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
+| `npm run check:template` | fake-user build and generated-site identity residue scan          |
 
 CI runs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
 
@@ -209,13 +209,13 @@ CI runs `npm ci` followed by `npm run check`. See **[Quality checks](docs/qualit
 
 For most users, connect the GitHub repository to Cloudflare Pages:
 
-| Setting | Value |
-| --- | --- |
-| Production branch | `main` |
-| Build command | `npm run build:production` |
-| Build output directory | `dist` |
-| `SITE_URL` | your production HTTPS origin |
-| `NODE_VERSION` | `22.22.3` or compatible Node 22 |
+| Setting                | Value                           |
+| ---------------------- | ------------------------------- |
+| Production branch      | `main`                          |
+| Build command          | `npm run build:production`      |
+| Build output directory | `dist`                          |
+| `SITE_URL`             | your production HTTPS origin    |
+| `NODE_VERSION`         | `22.22.3` or compatible Node 22 |
 
 The repository produces plain static files, so no Cloudflare adapter is required.
 
