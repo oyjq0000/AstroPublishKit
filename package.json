@@ -19,7 +19,8 @@
     "check:safety": "node scripts/check-safety.mjs",
     "check": "npm run typecheck && npm run test && npm run check:content && npm run check:safety && npm run build",
     "new-post": "node scripts/new-post.mjs",
-    "deploy:cf": "npm run build:production && wrangler deploy"
+    "deploy:cf": "npm run build:production && wrangler deploy",
+    "check:template": "node scripts/check-template.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.8",

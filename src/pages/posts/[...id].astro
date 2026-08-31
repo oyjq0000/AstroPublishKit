@@ -46,6 +46,9 @@ const breadcrumbLd = {
   image={post.data.cover?.src}
   noindex={post.data.noindex}
   type="article"
+  publishedTime={post.data.date}
+  modifiedTime={post.data.lastModified || post.data.date}
+  tags={post.data.tags}
   jsonLd={[articleLd, breadcrumbLd]}
 >
   <article class="shell article-shell" data-pagefind-body={!post.data.noindex ? true : undefined} data-pagefind-ignore={post.data.noindex ? true : undefined}>

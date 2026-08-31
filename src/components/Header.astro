@@ -3,6 +3,7 @@ import kit from "../../astro-publish-kit.config.mjs";
 import ThemeToggle from "./ThemeToggle.astro";
 
 const pathname = Astro.url.pathname;
+const isCurrent = (href: string) => pathname === href || pathname.startsWith(href);
 ---
 <header class="site-header">
   <div class="shell header-inner">
@@ -12,11 +13,17 @@ const pathname = Astro.url.pathname;
     </a>
     <nav class="primary-nav" aria-label="Primary navigation">
       {kit.navigation.map((item: { label: string; href: string }) => (
-        <a href={item.href} aria-current={pathname === item.href || pathname.startsWith(item.href) ? "page" : undefined}>
-          {item.label}
-        </a>
+        <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>
       ))}
     </nav>
+    <details class="mobile-menu">
+      <summary>Menu</summary>
+      <nav aria-label="Mobile navigation">
+        {kit.navigation.map((item: { label: string; href: string }) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </nav>
+    </details>
     <ThemeToggle />
   </div>
 </header>
