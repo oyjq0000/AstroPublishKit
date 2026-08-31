@@ -9,7 +9,11 @@ A clean, static-first Astro publishing starter for blogs, technical notes, and c
 
 **Live demo:** https://astropublishkit.pages.dev/
 
-[![AstroPublishKit preview](https://astropublishkit.pages.dev/og.svg)](https://astropublishkit.pages.dev/)
+<p align="center">
+  <a href="https://astropublishkit.pages.dev/">
+    <img src="docs/assets/demo-home.webp" alt="AstroPublishKit public demo homepage" />
+  </a>
+</p>
 
 AstroPublishKit is deliberately more **publishing kit** than **theme**: typed content, search, SEO/discovery, quality gates, and deployment defaults are built in, while the visual layer stays small and replaceable.
 
