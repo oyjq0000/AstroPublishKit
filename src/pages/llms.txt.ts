@@ -1,5 +1,6 @@
 import kit from "../../astro-publish-kit.config.mjs";
 import { getPublishedPosts, postUrl } from "../lib/content";
+import { isDiscoverablePost } from "../lib/posts.mjs";
 import { absolutePageUrl } from "../lib/urls.mjs";
 
 export async function GET() {
@@ -16,7 +17,7 @@ export async function GET() {
     "",
     "## Published posts",
     ...posts
-      .filter((post) => !post.data.noindex)
+      .filter(isDiscoverablePost)
       .map((post) => `- [${post.data.title}](${new URL(postUrl(post), `${kit.site.url}/`).href}): ${post.data.description}`),
     ""
   ];

@@ -3,6 +3,7 @@ import kit from "../../astro-publish-kit.config.mjs";
 import Analytics from "../components/Analytics.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import { structuredDataGraph } from "../lib/seo.mjs";
 import { absolutePageUrl } from "../lib/urls.mjs";
 import "../styles/global.css";
 
@@ -75,7 +76,7 @@ const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonL
         document.documentElement.dataset.theme = saved || preferred;
       })();
     </script>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": ldItems.map(({ ["@context"]: _context, ...item }) => item) })}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredDataGraph(ldItems))}></script>
     <Analytics />
   </head>
   <body>
