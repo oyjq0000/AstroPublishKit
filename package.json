@@ -26,6 +26,7 @@
     "check:template": "node scripts/check-template.mjs",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run check:config && npm run check:content && npm run build && npm run check:links && npm run check:sitemap && npm run check:safety && npm run check:template",
     "new-post": "node scripts/new-post.mjs",
+    "drafts": "node scripts/drafts.mjs",
     "deploy:cf": "npm run build:production && wrangler deploy"
   },
   "dependencies": {
