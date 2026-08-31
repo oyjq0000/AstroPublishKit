@@ -10,4 +10,9 @@ test("withTrailingSlash normalizes page paths", () => {
 
 test("absolutePageUrl emits canonical page URLs with trailing slashes", () => {
   assert.equal(absolutePageUrl("/posts/example", "https://example.org"), "https://example.org/posts/example/");
+  assert.equal(absolutePageUrl("/posts/example/", "https://example.org/"), "https://example.org/posts/example/");
+});
+
+test("canonical URLs preserve Unicode path meaning through URL encoding", () => {
+  assert.equal(absolutePageUrl("/tags/内容", "https://example.org"), "https://example.org/tags/%E5%86%85%E5%AE%B9/");
 });

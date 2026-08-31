@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPublishedPosts } from "../../lib/content";
 const posts = await getPublishedPosts();
 ---
+
 <BaseLayout title="Posts" description="All published posts.">
   <section class="shell page-header">
     <p class="eyebrow">Library</p>

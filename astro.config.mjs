@@ -24,7 +24,10 @@ function frontmatterValue(source, key) {
 const sitemapMeta = new Map();
 for (const file of walk(postsRoot).filter((file) => /\.(md|mdx)$/.test(file))) {
   const source = fs.readFileSync(file, "utf8");
-  const relative = path.relative(postsRoot, file).replace(/\\/g, "/").replace(/\.(md|mdx)$/, "");
+  const relative = path
+    .relative(postsRoot, file)
+    .replace(/\\/g, "/")
+    .replace(/\.(md|mdx)$/, "");
   const pathname = withTrailingSlash(`/posts/${relative}`);
   const noindex = frontmatterValue(source, "noindex") === "true";
   const lastmod = frontmatterValue(source, "lastModified") || frontmatterValue(source, "date");
@@ -51,7 +54,7 @@ export default defineConfig({
         const meta = sitemapMeta.get(pathnameOf(item.url));
         if (meta?.lastmod) item.lastmod = new Date(meta.lastmod);
         return item;
-      }
-    })
-  ]
+      },
+    }),
+  ],
 });

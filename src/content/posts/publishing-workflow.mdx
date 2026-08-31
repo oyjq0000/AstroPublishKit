@@ -13,7 +13,8 @@ import Accordion from "../../components/Accordion.astro";
 A reusable publishing starter should reduce the number of things you need to remember. That means the default workflow should be predictable rather than clever.
 
 <Callout title="Release principle" tone="tip">
-  A successful content change should pass the same checks locally and in CI, then produce the same static output for every supported host.
+  A successful content change should pass the same checks locally and in CI, then produce the same static output for
+  every supported host.
 </Callout>
 
 ## Write against a schema
@@ -29,5 +30,6 @@ Comments and analytics are useful, but a missing third-party account should neve
 Pagefind indexes the generated `dist/` directory. This keeps search independent of your content source and avoids introducing a hosted search backend.
 
 <Accordion summary="Why not add a database now?">
-  Static publishing already covers the first release goals. A database would add deployment, security and migration work without improving the core writing path.
+  Static publishing already covers the first release goals. A database would add deployment, security and migration work
+  without improving the core writing path.
 </Accordion>

@@ -4,17 +4,28 @@ import { postUrl } from "../lib/content";
 import { slugify } from "../lib/text.mjs";
 import { withTrailingSlash } from "../lib/urls.mjs";
 
-interface Props { post: Post }
+interface Props {
+  post: Post;
+}
 const { post } = Astro.props;
 ---
+
 <article class="post-card">
   <div class="post-card-meta">
-    <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString("en", { year: "numeric", month: "short", day: "2-digit" })}</time>
+    <time datetime={post.data.date.toISOString()}
+      >{post.data.date.toLocaleDateString("en", { year: "numeric", month: "short", day: "2-digit" })}</time
+    >
     <a href={withTrailingSlash(`/categories/${slugify(post.data.category)}`)}>{post.data.category}</a>
   </div>
   <h2><a href={postUrl(post)}>{post.data.title}</a></h2>
   <p>{post.data.description}</p>
   <ul class="tag-row" aria-label="Tags">
-    {post.data.tags.map((tag) => <li><a href={withTrailingSlash(`/tags/${slugify(tag)}`)}>#{tag}</a></li>)}
+    {
+      post.data.tags.map((tag) => (
+        <li>
+          <a href={withTrailingSlash(`/tags/${slugify(tag)}`)}>#{tag}</a>
+        </li>
+      ))
+    }
   </ul>
 </article>

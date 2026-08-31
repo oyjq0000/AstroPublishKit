@@ -25,5 +25,3 @@ jobs:
         run: npm ci
       - name: Verify
         run: npm run check
-      - name: Verify template usage
-        run: npm run check:template

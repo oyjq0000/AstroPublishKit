@@ -3,6 +3,7 @@ import kit from "../../astro-publish-kit.config.mjs";
 import Analytics from "../components/Analytics.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import { structuredDataGraph } from "../lib/seo.mjs";
 import { absolutePageUrl } from "../lib/urls.mjs";
 import "../styles/global.css";
 
@@ -27,7 +28,7 @@ const {
   publishedTime,
   modifiedTime,
   tags = [],
-  jsonLd
+  jsonLd,
 } = Astro.props;
 
 const pageTitle = title ? `${title} · ${kit.site.title}` : kit.site.title;
@@ -38,10 +39,11 @@ const websiteLd = {
   "@type": "WebSite",
   name: kit.site.title,
   url: new URL("/", `${kit.site.url}/`).href,
-  description: kit.site.description
+  description: kit.site.description,
 };
 const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : [websiteLd];
 ---
+
 <!doctype html>
 <html lang={kit.site.language}>
   <head>
@@ -61,8 +63,16 @@ const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonL
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={imageUrl} />
     <meta property="og:locale" content={kit.site.locale} />
-    {type === "article" && publishedTime && <meta property="article:published_time" content={new Date(publishedTime).toISOString()} />}
-    {type === "article" && modifiedTime && <meta property="article:modified_time" content={new Date(modifiedTime).toISOString()} />}
+    {
+      type === "article" && publishedTime && (
+        <meta property="article:published_time" content={new Date(publishedTime).toISOString()} />
+      )
+    }
+    {
+      type === "article" && modifiedTime && (
+        <meta property="article:modified_time" content={new Date(modifiedTime).toISOString()} />
+      )
+    }
     {type === "article" && tags.map((tag) => <meta property="article:tag" content={tag} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
@@ -75,7 +85,7 @@ const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonL
         document.documentElement.dataset.theme = saved || preferred;
       })();
     </script>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": ldItems.map(({ ["@context"]: _context, ...item }) => item) })}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredDataGraph(ldItems))} />
     <Analytics />
   </head>
   <body>

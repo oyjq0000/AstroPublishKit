@@ -25,7 +25,11 @@ if (fs.existsSync(file)) {
 }
 
 const today = new Date().toISOString().slice(0, 10);
-const title = slug.split("-").filter(Boolean).map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
+const title = slug
+  .split("-")
+  .filter(Boolean)
+  .map((part) => part[0].toUpperCase() + part.slice(1))
+  .join(" ");
 const content = `---\ntitle: ${title}\ndescription: Replace this sentence with a useful description of at least twenty characters.\ndate: ${today}\ncategory: General\ntags: []\ndraft: true\nnoindex: false\n---\n\nStart writing here.\n`;
 
 fs.writeFileSync(file, content, "utf8");

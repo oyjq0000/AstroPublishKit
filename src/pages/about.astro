@@ -2,24 +2,29 @@
 import kit from "../../astro-publish-kit.config.mjs";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
+
 <BaseLayout title="About" description={`About ${kit.site.title}.`}>
   <article class="shell prose standalone-prose">
     <h1>About {kit.site.title}</h1>
     <p>{kit.site.description}</p>
     <h2>About this page</h2>
     <p>
-      This starter includes example About content so a new site is complete on first build. Replace
-      this page with your own introduction, editorial focus, or project information before launch.
+      This starter includes example About content so a new site is complete on first build. Replace this page with your
+      own introduction, editorial focus, or project information before launch.
     </p>
     <h2>Author</h2>
     <p>
       {kit.site.author.url ? <a href={kit.site.author.url}>{kit.site.author.name}</a> : kit.site.author.name}
     </p>
-    {kit.site.repository && (
-      <>
-        <h2>Source</h2>
-        <p><a href={kit.site.repository}>Repository</a></p>
-      </>
-    )}
+    {
+      kit.site.repository && (
+        <>
+          <h2>Source</h2>
+          <p>
+            <a href={kit.site.repository}>Repository</a>
+          </p>
+        </>
+      )
+    }
   </article>
 </BaseLayout>

@@ -1,11 +1,20 @@
 ---
-interface Props { title: string }
+interface Props {
+  title: string;
+}
 const { title } = Astro.props;
 ---
+
 <div class="share-row" data-share-root data-title={title}>
   <button type="button" data-share>Share</button>
-  <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`} rel="noopener noreferrer">X</a>
-  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`} rel="noopener noreferrer">LinkedIn</a>
+  <a
+    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`}
+    rel="noopener noreferrer">X</a
+  >
+  <a
+    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+    rel="noopener noreferrer">LinkedIn</a
+  >
   <span class="share-status" aria-live="polite" data-share-status></span>
 </div>
 <script>

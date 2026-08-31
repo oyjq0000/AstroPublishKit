@@ -36,7 +36,7 @@ The included visual layer is intentionally minimal and replaceable. The default 
 
 ## 5-minute setup
 
-Requirements: Node.js 22.13+.
+Requirements: Node.js 22.22.3+.
 
 1. Click **Use this template** on GitHub (recommended), or clone the repository.
 2. Install the locked dependencies with `npm ci`.
@@ -69,8 +69,8 @@ npm run dev
 - sitemap with article `lastModified` and `noindex` filtering
 - RSS, robots.txt and llms.txt
 - optional Giscus, Cloudflare Web Analytics and Umami, all off by default
-- content checks, safety checks, unit tests and template regression checks
-- GitHub Actions CI
+- ESLint, Prettier, config/content/link/sitemap/safety checks, unit tests and template regression checks
+- GitHub Actions CI with one release gate
 - Cloudflare Pages plus optional Workers Static Assets deployment
 
 ## Visual tour
@@ -137,29 +137,35 @@ npm run build && npm run preview
 
 ## Quality gates
 
-| Check | Purpose |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript correctness |
-| `npm run test` | utility regression tests |
-| `npm run check:content` | frontmatter, content conventions and taxonomy slug collisions |
-| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
-| `npm run build` | final static output + Pagefind index |
-| `npm run check:template` | fake-user build and generated-site identity residue scan |
-| `npm run check` | typecheck + tests + content + safety + build |
+`npm run check` is the single local and CI release gate.
 
-CI installs with `npm ci`, runs `npm run check`, then runs the template regression check.
+| Check                    | Purpose                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript correctness                                    |
+| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                  |
+| `npm run format:check`   | Prettier verification without modifying files                     |
+| `npm run test`           | URL, content, taxonomy, text and SEO regression tests             |
+| `npm run check:config`   | generic site/config/integration validation                        |
+| `npm run check:content`  | content conventions, taxonomy safety and editorial warnings       |
+| `npm run build`          | final static output + Pagefind index                              |
+| `npm run check:links`    | offline validation of generated internal page links               |
+| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
+| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
+| `npm run check:template` | fake-user build and generated-site identity residue scan          |
+
+CI only needs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
 
 ## Cloudflare Pages — recommended
 
 For most users, connect the GitHub repository to Cloudflare Pages:
 
-| Setting | Value |
-| --- | --- |
-| Production branch | `main` |
-| Build command | `npm run build:production` |
-| Build output directory | `dist` |
-| `SITE_URL` | your production HTTPS origin |
-| `NODE_VERSION` | `22.13.0` or compatible Node 22 |
+| Setting                | Value                           |
+| ---------------------- | ------------------------------- |
+| Production branch      | `main`                          |
+| Build command          | `npm run build:production`      |
+| Build output directory | `dist`                          |
+| `SITE_URL`             | your production HTTPS origin    |
+| `NODE_VERSION`         | `22.22.3` or compatible Node 22 |
 
 The repository produces plain static files, so no Cloudflare adapter is required.
 
@@ -185,7 +191,6 @@ See **[Deployment](docs/deployment.md)** for details.
 - [ ] Keep, edit or remove the demo posts
 - [ ] Set `SITE_URL`
 - [ ] Run `npm run check`
-- [ ] Run `npm run check:template`
 - [ ] Run `npm run build:production`
 
 ## Template cleanup
@@ -217,12 +222,14 @@ src/pages/                      Static routes and feeds
 src/styles/global.css           Replaceable visual layer
 astro-publish-kit.config.mjs    Primary site configuration
 scripts/                        Authoring and quality checks
-docs/                           Content, configuration and deployment docs
+docs/                           Content, configuration, quality and deployment docs
 ```
 
 ## Scope
 
 v0.1.x intentionally does not include i18n routing, Mermaid, LaTeX, dynamic OG generation, galleries, a multi-author system, CMS/admin/database/auth features, AI writing, ads, or a heavy theme configuration framework.
+
+See **[Feature matrix](feature-matrix.md)** for the current implementation status and v0.2.0 / v0.3.0+ roadmap boundaries.
 
 ## Provenance
 

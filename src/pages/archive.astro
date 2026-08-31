@@ -9,18 +9,28 @@ for (const post of posts) {
 }
 const years = [...grouped.keys()].sort((a, b) => b - a);
 ---
+
 <BaseLayout title="Archive" description="All posts grouped by year.">
-  <section class="shell page-header"><p class="eyebrow">Timeline</p><h1>Archive</h1><p>Everything published, newest first.</p></section>
+  <section class="shell page-header">
+    <p class="eyebrow">Timeline</p><h1>Archive</h1><p>Everything published, newest first.</p>
+  </section>
   <section class="shell archive section-block">
-    {years.map((year) => (
-      <div class="archive-year">
-        <h2>{year}</h2>
-        <ol>
-          {grouped.get(year)?.map((post) => (
-            <li><time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString("en", { month: "short", day: "2-digit" })}</time><a href={postUrl(post)}>{post.data.title}</a></li>
-          ))}
-        </ol>
-      </div>
-    ))}
+    {
+      years.map((year) => (
+        <div class="archive-year">
+          <h2>{year}</h2>
+          <ol>
+            {grouped.get(year)?.map((post) => (
+              <li>
+                <time datetime={post.data.date.toISOString()}>
+                  {post.data.date.toLocaleDateString("en", { month: "short", day: "2-digit" })}
+                </time>
+                <a href={postUrl(post)}>{post.data.title}</a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
   </section>
 </BaseLayout>
