@@ -1,5 +1,10 @@
 # AstroPublishKit
 
+<p align="center">
+  <strong>English</strong> ·
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
+
 [![CI](https://github.com/oyjq0000/AstroPublishKit/actions/workflows/ci.yml/badge.svg)](https://github.com/oyjq0000/AstroPublishKit/actions/workflows/ci.yml)
 [![Astro 7](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)](https://astro.build/)
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
@@ -11,7 +16,7 @@ A clean, static-first Astro publishing starter for blogs, technical notes, and c
 
 <p align="center">
   <a href="https://astropublishkit.pages.dev/">
-    <img src="docs/assets/demo-home.webp" alt="AstroPublishKit public demo homepage" />
+    <img src="docs/assets/demo-home.png" alt="AstroPublishKit public demo homepage" />
   </a>
 </p>
 
@@ -38,7 +43,7 @@ No database, admin panel, SSR runtime, production analytics account, or private 
 
 Requirements: Node.js 22.13+.
 
-Use **Use this template** on GitHub after the repository is published as a template, or clone it normally:
+Use **Use this template** on GitHub, or clone it normally:
 
 ```bash
 git clone https://github.com/oyjq0000/AstroPublishKit.git
