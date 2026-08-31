@@ -20,15 +20,16 @@
   </a>
 </p>
 
-AstroPublishKit 优先解决的是 **发布基础设施**，而不只是提供一个 Theme：
+AstroPublishKit 优先解决的是 **发布基础设施**：
 
 - ✓ 类型化内容模型
-- ✓ 静态搜索
-- ✓ SEO 与内容发现输出
-- ✓ 质量检查
-- ✓ 部署默认配置
+- ✓ Markdown / MDX 写作
+- ✓ 静态搜索与 SEO / 内容发现输出
+- ✓ 本地写作辅助工具
+- ✓ 强质量门禁
+- ✓ 静态部署默认配置
 
-自带视觉层刻意保持轻量，方便替换。默认构建结果就是 `dist/` 中的普通静态文件；不需要数据库、Node 服务、SSR Runtime 或独立搜索后端。
+自带视觉层刻意保持轻量，方便替换。默认构建结果就是 `dist/` 中的普通静态文件；不需要数据库、CMS、Node 服务、SSR Runtime 或托管搜索后端。
 
 <p align="center">
   <img src="docs/assets/publishing-pipeline.svg" alt="AstroPublishKit 从 Markdown 和 MDX 到 Cloudflare 静态部署的发布流水线" />
@@ -41,15 +42,16 @@ AstroPublishKit 优先解决的是 **发布基础设施**，而不只是提供�
 1. 在 GitHub 点击 **Use this template**（推荐），或普通 clone。
 2. 使用 `npm ci` 安装 lockfile 锁定的依赖。
 3. 修改 `astro-publish-kit.config.mjs`，替换 Demo 身份信息。
-4. 把 `SITE_URL` 设置为你的生产 HTTPS Origin。
-5. 用 `npm run new-post -- my-first-post` 创建第一篇文章。
-6. 运行 `npm run check`。
-7. 将 `dist/` 部署到 Cloudflare Pages。
+4. 在生产构建前，把 `SITE_URL` 设置为你的生产 HTTPS Origin。
+5. 使用 `npm run new-post`，或 `npm run new-post -- my-first-post` 创建 draft。
+6. 使用 `npm run dev` 写作并预览。
+7. 运行 `npm run check`，把 `draft` 改为 `false`，再构建最终静态输出。
 
 ```bash
 git clone https://github.com/oyjq0000/AstroPublishKit.git
 cd AstroPublishKit
 npm ci
+npm run new-post
 npm run dev
 ```
 
@@ -57,9 +59,47 @@ npm run dev
 
 `SITE_URL` 决定 Canonical、Sitemap、RSS、robots.txt、JSON-LD、llms.txt、Open Graph 与分享 URL 使用的生产 Origin。
 
+## 写作与发布流程
+
+v0.2.0 把本地写作路径收敛成几个明确步骤：
+
+```bash
+# 交互式创建 draft
+npm run new-post
+
+# 或继续使用快速非交互模式
+npm run new-post -- my-post
+
+# 查看当前未发布文章
+npm run drafts
+
+# 写作与本地预览，也支持直接预览 draft URL
+npm run dev
+
+# 完整 Release Gate
+npm run check
+
+# 最终静态产物 + Pagefind 预览
+npm run build
+npm run preview
+```
+
+新文章默认 `draft: true`。在 `npm run dev` 中，可以直接访问 `/posts/<slug>/` 预览 draft，而不必先把它公开；production build 仍然会完全排除 draft。
+
+文章准备好后，把 `draft` 改成 `false`，运行检查，然后使用真实域名执行生产 smoke build：
+
+```bash
+SITE_URL=https://your-domain.example npm run build:production
+```
+
+完整的 create → write → preview → check → publish 流程见 **[Writing workflow](docs/writing-workflow.md)**。
+
 ## 功能
 
 - Astro 7 + Markdown / MDX + 类型化 Content Collections
+- 交互式 `new-post`，同时保留兼容的非交互模式
+- Markdown / MDX 创建、slug 合法化和重复文件保护
+- `npm run drafts` 与仅开发环境可用的 draft 直接预览
 - 响应式浅色 / 深色界面与移动端导航
 - 文章、分类、标签、归档、阅读时长和文章元数据
 - Pagefind 静态搜索
@@ -70,7 +110,8 @@ npm run dev
 - RSS、robots.txt 和 llms.txt
 - 可选 Giscus、Cloudflare Web Analytics 和 Umami，默认关闭
 - ESLint、Prettier、配置/内容/链接/Sitemap/安全检查、单元测试与模板回归检查
-- 只使用一个 Release Gate 的 GitHub Actions CI
+- 面向作者的内容诊断：错误、警告、修复提示和最终汇总
+- 使用统一 Release Gate 的 GitHub Actions CI
 - Cloudflare Pages，以及可选的 Workers Static Assets 部署
 
 ## 界面预览
@@ -105,15 +146,19 @@ Pagefind：直接从静态构建产物生成搜索结果。
 
 文章放在 `src/content/posts/`，支持 `.md` 和 `.mdx`。
 
+生成器使用固定且一致的 Frontmatter 顺序；`lastModified`、`author`、`cover` 等可选字段只在需要时添加。
+
 ```yaml
 ---
-title: 我的第一篇文章
-description: 一段可以独立用于读者预览和搜索结果的文章摘要。
+title: "我的第一篇文章"
+description: "一段可以独立用于读者预览和搜索结果的文章摘要。"
 date: 2026-08-31
-category: Engineering
-tags: [Astro]
-draft: false
+category: "Engineering"
+tags: ["Astro"]
+draft: true
 noindex: false
+featured: false
+lang: "en"
 ---
 ```
 
@@ -121,50 +166,55 @@ noindex: false
 
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
 - `author` 可选。不填时继承站点作者；填写时仅覆盖当前文章作者。
-- v0.1.x 中 `lang` 只是文章元数据，**不会**开启多语言路由、UI 翻译或 hreflang。
-- `draft: true` 表示页面完全不生成。
-- `noindex: true` 表示页面仍会生成并可直接访问，但从 Sitemap、Pagefind 和 llms.txt 的发现链路中排除，同时输出 robots `noindex`。
+- v0.2.0 中 `lang` 仍然只是文章元数据，**不会**开启多语言路由、UI 翻译、fallback 或 hreflang。
+- `draft: true` 只会在 `npm run dev` 时允许通过直接 URL 预览；production output 不生成该页面。
+- `noindex: true` 仍会生成已发布页面，但会从 Sitemap、Pagefind 和 llms.txt 的发现链路中排除，并输出 robots `noindex`。
 
-封面、MDX 组件和完整 Frontmatter 见 **[内容写作说明](docs/content.md)**。
+封面可采用推荐但不强制的目录约定 `public/images/posts/<slug>/`；Frontmatter 使用 public-root URL，例如 `/images/posts/my-post/cover.webp`。只要设置了 `cover`，`alt` 就必须非空；未设置 cover 时使用配置中的默认 OG 图，Starter 默认是 `public/og.png`。
 
-### Pagefind 在开发环境中的行为
+完整 Frontmatter 与封面说明见 **[内容写作说明](docs/content.md)**，三个可选 MDX 组件见 **[MDX components](docs/mdx-components.md)**。
 
-Pagefind 索引由 `npm run build` 生成。`npm run dev` 时 Search 页面本身存在，但要验证完整搜索索引，建议使用：
+### Pagefind 与预览
+
+Pagefind 索引由 `npm run build` 生成。`npm run dev` 适合快速写作预览；完整静态搜索索引应使用：
 
 ```bash
-npm run build && npm run preview
+npm run build
+npm run preview
 ```
+
+不额外增加 preview 包装命令，这两个现有模式已经分别覆盖写作和发布前预览。
 
 ## 质量门禁
 
 `npm run check` 是本地和 CI 共用的唯一 Release Gate。
 
-| 检查                     | 作用                                                |
-| ------------------------ | --------------------------------------------------- |
-| `npm run typecheck`      | Astro / TypeScript 正确性                           |
-| `npm run lint`           | JS、MJS、TS、Astro 的 ESLint 检查                   |
-| `npm run format:check`   | 使用 Prettier 校验格式但不修改文件                  |
-| `npm run test`           | URL、内容、taxonomy、文本与 SEO 回归测试            |
-| `npm run check:config`   | 通用站点配置与可选集成验证                          |
-| `npm run check:content`  | 内容约定、taxonomy 安全与非阻塞警告                 |
-| `npm run build`          | 最终静态输出 + Pagefind 索引                        |
-| `npm run check:links`    | 离线检查生成后的站内页面链接                        |
-| `npm run check:sitemap`  | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
-| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件                  |
-| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留        |
+| 检查 | 作用 |
+| --- | --- |
+| `npm run typecheck` | Astro / TypeScript 正确性 |
+| `npm run lint` | JS、MJS、TS、Astro 的 ESLint 检查 |
+| `npm run format:check` | 使用 Prettier 校验格式但不修改文件 |
+| `npm run test` | URL、内容、taxonomy、authoring、文本与 SEO 回归测试 |
+| `npm run check:config` | 通用站点配置与可选集成验证 |
+| `npm run check:content` | 内容约定、taxonomy 安全与作者反馈 |
+| `npm run build` | 最终静态输出 + Pagefind 索引 |
+| `npm run check:links` | 离线检查生成后的站内页面链接 |
+| `npm run check:sitemap` | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
+| `npm run check:safety` | 常见 secret 模式与误提交的环境文件 |
+| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
 
-CI 只需要执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非阻塞 Warning 与生产 smoke check 的详细说明见 **[质量检查文档](docs/quality-checks.md)**。
+CI 执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非阻塞 Warning 与生产 smoke check 的详细说明见 **[质量检查文档](docs/quality-checks.md)**。
 
 ## Cloudflare Pages — 推荐
 
 绝大多数用户建议直接把 GitHub 仓库连接到 Cloudflare Pages：
 
-| 配置项         | 值                         |
-| -------------- | -------------------------- |
-| 生产分支       | `main`                     |
-| 构建命令       | `npm run build:production` |
-| 构建输出目录   | `dist`                     |
-| `SITE_URL`     | 你的生产 HTTPS Origin      |
+| 配置项 | 值 |
+| --- | --- |
+| 生产分支 | `main` |
+| 构建命令 | `npm run build:production` |
+| 构建输出目录 | `dist` |
+| `SITE_URL` | 你的生产 HTTPS Origin |
 | `NODE_VERSION` | `22.22.3` 或兼容的 Node 22 |
 
 仓库输出普通静态文件，因此不需要 Cloudflare Adapter。
@@ -189,9 +239,10 @@ npm run deploy:cf
 - [ ] 替换默认 1200×630 OG 图片
 - [ ] 如有需要，替换通用 About 内容
 - [ ] 保留、修改或删除 Demo 文章
+- [ ] 运行 `npm run drafts`，确认预期发布状态
 - [ ] 设置 `SITE_URL`
 - [ ] 运行 `npm run check`
-- [ ] 运行 `npm run build:production`
+- [ ] 运行 `SITE_URL=https://your-domain.example npm run build:production`
 
 ## Template 清理
 
@@ -218,18 +269,19 @@ npm run deploy:cf
 ```text
 src/content/posts/              Markdown / MDX 文章
 src/components/                 小型通用 UI / MDX 组件
+src/lib/content-rules.mjs       共用写作 / Frontmatter 规则
 src/pages/                      静态路由与 Feed
 src/styles/global.css           可替换的视觉层
 astro-publish-kit.config.mjs    主要站点配置
 scripts/                        写作和质量检查脚本
-docs/                           内容、配置、质量检查和部署文档
+docs/                           写作、内容、配置、质量检查和部署文档
 ```
 
 ## 当前范围
 
-v0.1.x 明确不包含 i18n 路由、Mermaid、LaTeX、Dynamic OG、Gallery、多作者系统、CMS / Admin / Database / Auth、AI 写作、广告系统或重型 Theme 配置系统。
+v0.2.0 只改善本地发布体验，不加入 i18n 路由、Mermaid、LaTeX、Dynamic OG、Gallery / Lightbox、多作者系统、CMS / Admin / Database / Auth、AI 写作、广告系统或重型 Theme 配置系统。
 
-当前实现状态以及 v0.2.0 / v0.3.0+ 的边界见 **[Feature Matrix](feature-matrix.md)**。
+当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 
 ## 来源与署名
 

@@ -23,12 +23,13 @@ A clean, static-first Astro publishing starter for blogs, technical notes, and c
 AstroPublishKit focuses on **publishing infrastructure first**:
 
 - ✓ typed content model
-- ✓ static search
-- ✓ SEO and discovery outputs
-- ✓ quality checks
-- ✓ deployment defaults
+- ✓ Markdown / MDX authoring
+- ✓ static search and SEO/discovery outputs
+- ✓ local authoring helpers
+- ✓ strong quality checks
+- ✓ static deployment defaults
 
-The included visual layer is intentionally minimal and replaceable. The default site builds to plain static files in `dist/`; no database, Node server, SSR runtime, or search backend is required.
+The included visual layer is intentionally minimal and replaceable. The default site builds to plain static files in `dist/`; no database, CMS, Node server, SSR runtime, or hosted search backend is required.
 
 <p align="center">
   <img src="docs/assets/publishing-pipeline.svg" alt="AstroPublishKit publishing pipeline from Markdown and MDX to static Cloudflare deployment" />
@@ -41,15 +42,16 @@ Requirements: Node.js 22.22.3+.
 1. Click **Use this template** on GitHub (recommended), or clone the repository.
 2. Install the locked dependencies with `npm ci`.
 3. Edit `astro-publish-kit.config.mjs` and replace the demo identity.
-4. Set `SITE_URL` to your production HTTPS origin.
-5. Create your first post with `npm run new-post -- my-first-post`.
-6. Run `npm run check`.
-7. Deploy `dist/` to Cloudflare Pages.
+4. Set `SITE_URL` to your production HTTPS origin before the production build.
+5. Create a draft with `npm run new-post` or `npm run new-post -- my-first-post`.
+6. Write and preview with `npm run dev`.
+7. Run `npm run check`, set `draft: false`, then build the final static output.
 
 ```bash
 git clone https://github.com/oyjq0000/AstroPublishKit.git
 cd AstroPublishKit
 npm ci
+npm run new-post
 npm run dev
 ```
 
@@ -57,9 +59,47 @@ npm run dev
 
 `SITE_URL` controls the production origin used by canonical URLs, sitemap, RSS, robots.txt, JSON-LD, llms.txt, Open Graph URLs, and sharing URLs.
 
+## Publishing workflow
+
+v0.2.0 keeps the authoring loop local and explicit:
+
+```bash
+# Create a guided draft
+npm run new-post
+
+# Or keep the fast non-interactive workflow
+npm run new-post -- my-post
+
+# See unfinished posts
+npm run drafts
+
+# Write and preview, including direct draft URLs
+npm run dev
+
+# Run the complete release gate
+npm run check
+
+# Review the final static output + Pagefind index
+npm run build
+npm run preview
+```
+
+New posts default to `draft: true`. During `npm run dev`, a draft can be opened directly at `/posts/<slug>/` without publishing it. Production builds still exclude drafts.
+
+When the article is ready, change `draft` to `false`, run the checks, then run the production smoke build with the real origin:
+
+```bash
+SITE_URL=https://your-domain.example npm run build:production
+```
+
+See **[Writing workflow](docs/writing-workflow.md)** for the complete create → write → preview → check → publish sequence.
+
 ## What you get
 
 - Astro 7 + Markdown/MDX + typed Content Collections
+- guided `new-post` plus backward-compatible non-interactive creation
+- Markdown and MDX file creation with slug normalization and duplicate protection
+- draft listing and development-only direct draft preview
 - responsive light/dark interface with mobile navigation
 - posts, categories, tags, archive, reading time and article metadata
 - Pagefind static search
@@ -70,6 +110,7 @@ npm run dev
 - RSS, robots.txt and llms.txt
 - optional Giscus, Cloudflare Web Analytics and Umami, all off by default
 - ESLint, Prettier, config/content/link/sitemap/safety checks, unit tests and template regression checks
+- author-facing content diagnostics with errors, warnings, fix hints and a final summary
 - GitHub Actions CI with one release gate
 - Cloudflare Pages plus optional Workers Static Assets deployment
 
@@ -105,15 +146,19 @@ Optional integrations use environment variables documented in `.env.example`. Em
 
 Posts live in `src/content/posts/` and can use `.md` or `.mdx`.
 
+Generated posts use a consistent frontmatter shape. Optional fields such as `lastModified`, `author` and `cover` are added only when needed.
+
 ```yaml
 ---
-title: My useful post
-description: A useful standalone summary for readers and search engines.
+title: "My useful post"
+description: "A useful standalone summary for readers and search engines."
 date: 2026-08-31
-category: Engineering
-tags: [Astro]
-draft: false
+category: "Engineering"
+tags: ["Astro"]
+draft: true
 noindex: false
+featured: false
+lang: "en"
 ---
 ```
 
@@ -121,51 +166,56 @@ A few semantics are worth making explicit:
 
 - `category` is one broad section; `tags` are zero or more specific topics.
 - `author` is optional. When omitted, the site-level author is used; when set, it overrides the author for that post.
-- `lang` is article metadata only in v0.1.x. It does **not** enable multilingual routing, translated UI, or hreflang.
-- `draft: true` means the page is not generated.
-- `noindex: true` means the page is generated and directly accessible, but is excluded from sitemap discovery, Pagefind and llms.txt and receives a robots `noindex` directive.
+- `lang` is article metadata only in v0.2.0. It does **not** enable multilingual routing, translated UI, fallback behavior, or hreflang.
+- `draft: true` is previewable by direct URL only during `npm run dev`; production output does not generate the page.
+- `noindex: true` still generates a published page, but excludes it from sitemap discovery, Pagefind and llms.txt and adds robots `noindex`.
 
-See **[Content authoring](docs/content.md)** for covers, MDX components and the full frontmatter model.
+For covers, the optional recommended convention is `public/images/posts/<slug>/`; frontmatter uses the public root-relative URL such as `/images/posts/my-post/cover.webp`. A non-empty cover `alt` is required. When no cover is set, the configured default OG image is used (`public/og.png` in the starter).
+
+See **[Content authoring](docs/content.md)** for the complete frontmatter model and cover semantics, and **[MDX components](docs/mdx-components.md)** for the three optional MDX primitives.
 
 ### Pagefind in development
 
-Pagefind is generated by `npm run build`. The search page exists during `npm run dev`, but the complete static index should be tested with:
+Pagefind is generated by `npm run build`. `npm run dev` is the fast writing preview, but the complete static search index should be tested with:
 
 ```bash
-npm run build && npm run preview
+npm run build
+npm run preview
 ```
+
+No additional preview wrapper is required; these two existing modes have distinct purposes.
 
 ## Quality gates
 
 `npm run check` is the single local and CI release gate.
 
-| Check                    | Purpose                                                           |
-| ------------------------ | ----------------------------------------------------------------- |
-| `npm run typecheck`      | Astro / TypeScript correctness                                    |
-| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                  |
-| `npm run format:check`   | Prettier verification without modifying files                     |
-| `npm run test`           | URL, content, taxonomy, text and SEO regression tests             |
-| `npm run check:config`   | generic site/config/integration validation                        |
-| `npm run check:content`  | content conventions, taxonomy safety and editorial warnings       |
-| `npm run build`          | final static output + Pagefind index                              |
-| `npm run check:links`    | offline validation of generated internal page links               |
-| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
-| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
-| `npm run check:template` | fake-user build and generated-site identity residue scan          |
+| Check | Purpose |
+| --- | --- |
+| `npm run typecheck` | Astro / TypeScript correctness |
+| `npm run lint` | ESLint for JS, MJS, TS and Astro |
+| `npm run format:check` | Prettier verification without modifying files |
+| `npm run test` | URL, content, taxonomy, authoring, text and SEO regression tests |
+| `npm run check:config` | generic site/config/integration validation |
+| `npm run check:content` | content conventions, taxonomy safety and editorial feedback |
+| `npm run build` | final static output + Pagefind index |
+| `npm run check:links` | offline validation of generated internal page links |
+| `npm run check:sitemap` | sitemap origin, pages, exclusions, duplicates and `lastmod` |
+| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
+| `npm run check:template` | fake-user build and generated-site identity residue scan |
 
-CI only needs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
+CI runs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
 
 ## Cloudflare Pages — recommended
 
 For most users, connect the GitHub repository to Cloudflare Pages:
 
-| Setting                | Value                           |
-| ---------------------- | ------------------------------- |
-| Production branch      | `main`                          |
-| Build command          | `npm run build:production`      |
-| Build output directory | `dist`                          |
-| `SITE_URL`             | your production HTTPS origin    |
-| `NODE_VERSION`         | `22.22.3` or compatible Node 22 |
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `npm run build:production` |
+| Build output directory | `dist` |
+| `SITE_URL` | your production HTTPS origin |
+| `NODE_VERSION` | `22.22.3` or compatible Node 22 |
 
 The repository produces plain static files, so no Cloudflare adapter is required.
 
@@ -189,9 +239,10 @@ See **[Deployment](docs/deployment.md)** for details.
 - [ ] Replace the default 1200×630 OG image
 - [ ] Replace the About content if the generic example is not enough
 - [ ] Keep, edit or remove the demo posts
+- [ ] Run `npm run drafts` and confirm intended publish state
 - [ ] Set `SITE_URL`
 - [ ] Run `npm run check`
-- [ ] Run `npm run build:production`
+- [ ] Run `SITE_URL=https://your-domain.example npm run build:production`
 
 ## Template cleanup
 
@@ -218,18 +269,19 @@ No production account identifier ships as an integration default.
 ```text
 src/content/posts/              Markdown and MDX posts
 src/components/                 Small reusable UI/MDX primitives
+src/lib/content-rules.mjs       Shared authoring/frontmatter rules
 src/pages/                      Static routes and feeds
 src/styles/global.css           Replaceable visual layer
 astro-publish-kit.config.mjs    Primary site configuration
 scripts/                        Authoring and quality checks
-docs/                           Content, configuration, quality and deployment docs
+docs/                           Writing, content, configuration, quality and deployment docs
 ```
 
 ## Scope
 
-v0.1.x intentionally does not include i18n routing, Mermaid, LaTeX, dynamic OG generation, galleries, a multi-author system, CMS/admin/database/auth features, AI writing, ads, or a heavy theme configuration framework.
+v0.2.0 improves the local publishing experience without adding i18n routing, Mermaid, LaTeX, dynamic OG generation, gallery/lightbox, a multi-author system, CMS/admin/database/auth features, AI writing, ads, or a heavy theme configuration framework.
 
-See **[Feature matrix](feature-matrix.md)** for the current implementation status and v0.2.0 / v0.3.0+ roadmap boundaries.
+See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 
 ## Provenance
 
