@@ -137,15 +137,15 @@ npm run build && npm run preview
 
 ## Quality gates
 
-| Check | Purpose |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript correctness |
-| `npm run test` | utility regression tests |
-| `npm run check:content` | frontmatter, content conventions and taxonomy slug collisions |
-| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
-| `npm run build` | final static output + Pagefind index |
-| `npm run check:template` | fake-user build and generated-site identity residue scan |
-| `npm run check` | typecheck + tests + content + safety + build |
+| Check                    | Purpose                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript correctness                                    |
+| `npm run test`           | utility regression tests                                          |
+| `npm run check:content`  | frontmatter, content conventions and taxonomy slug collisions     |
+| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
+| `npm run build`          | final static output + Pagefind index                              |
+| `npm run check:template` | fake-user build and generated-site identity residue scan          |
+| `npm run check`          | typecheck + tests + content + safety + build                      |
 
 CI installs with `npm ci`, runs `npm run check`, then runs the template regression check.
 
@@ -153,13 +153,13 @@ CI installs with `npm ci`, runs `npm run check`, then runs the template regressi
 
 For most users, connect the GitHub repository to Cloudflare Pages:
 
-| Setting | Value |
-| --- | --- |
-| Production branch | `main` |
-| Build command | `npm run build:production` |
-| Build output directory | `dist` |
-| `SITE_URL` | your production HTTPS origin |
-| `NODE_VERSION` | `22.13.0` or compatible Node 22 |
+| Setting                | Value                           |
+| ---------------------- | ------------------------------- |
+| Production branch      | `main`                          |
+| Build command          | `npm run build:production`      |
+| Build output directory | `dist`                          |
+| `SITE_URL`             | your production HTTPS origin    |
+| `NODE_VERSION`         | `22.13.0` or compatible Node 22 |
 
 The repository produces plain static files, so no Cloudflare adapter is required.
 

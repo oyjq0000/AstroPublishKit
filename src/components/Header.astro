@@ -5,6 +5,7 @@ import ThemeToggle from "./ThemeToggle.astro";
 const pathname = Astro.url.pathname;
 const isCurrent = (href: string) => pathname === href || pathname.startsWith(href);
 ---
+
 <header class="site-header">
   <div class="shell header-inner">
     <a class="brand" href="/" aria-label={`${kit.site.title} home`}>
@@ -12,16 +13,24 @@ const isCurrent = (href: string) => pathname === href || pathname.startsWith(hre
       <span>{kit.site.shortTitle}</span>
     </a>
     <nav class="primary-nav" aria-label="Primary navigation">
-      {kit.navigation.map((item: { label: string; href: string }) => (
-        <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>
-      ))}
+      {
+        kit.navigation.map((item: { label: string; href: string }) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
     <details class="mobile-menu">
       <summary>Menu</summary>
       <nav aria-label="Mobile navigation">
-        {kit.navigation.map((item: { label: string; href: string }) => (
-          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>{item.label}</a>
-        ))}
+        {
+          kit.navigation.map((item: { label: string; href: string }) => (
+            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
       </nav>
     </details>
     <ThemeToggle />

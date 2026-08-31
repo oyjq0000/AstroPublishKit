@@ -69,7 +69,7 @@ if (!Array.isArray(kit.social)) {
 
 for (const [label, action] of [
   ["home.primaryAction", kit.home?.primaryAction],
-  ["home.secondaryAction", kit.home?.secondaryAction]
+  ["home.secondaryAction", kit.home?.secondaryAction],
 ]) {
   requireText(action?.label, `${label}.label`);
   if (typeof action?.href === "string" && action.href.startsWith("/")) validatePagePath(action.href, `${label}.href`);
@@ -80,17 +80,21 @@ const giscusRequired = [
   "PUBLIC_GISCUS_REPO",
   "PUBLIC_GISCUS_REPO_ID",
   "PUBLIC_GISCUS_CATEGORY",
-  "PUBLIC_GISCUS_CATEGORY_ID"
+  "PUBLIC_GISCUS_CATEGORY_ID",
 ];
 const giscusConfigured = giscusRequired.filter((key) => process.env[key]?.trim());
 if (giscusConfigured.length > 0 && giscusConfigured.length < giscusRequired.length) {
-  warnings.push("Giscus is only partially configured; it will remain safely disabled until all required values are present");
+  warnings.push(
+    "Giscus is only partially configured; it will remain safely disabled until all required values are present",
+  );
 }
 
 const umamiScript = process.env.PUBLIC_UMAMI_SCRIPT_URL?.trim();
 const umamiId = process.env.PUBLIC_UMAMI_WEBSITE_ID?.trim();
 if (Boolean(umamiScript) !== Boolean(umamiId)) {
-  warnings.push("Umami is only partially configured; it will remain safely disabled until script URL and website ID are both present");
+  warnings.push(
+    "Umami is only partially configured; it will remain safely disabled until script URL and website ID are both present",
+  );
 }
 if (umamiScript) validateHttpsUrl(umamiScript, "PUBLIC_UMAMI_SCRIPT_URL");
 

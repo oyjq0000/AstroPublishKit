@@ -21,7 +21,7 @@ function run(args, env = {}) {
   execFileSync(npm, args, {
     cwd: temp,
     env: { ...process.env, ...env },
-    stdio: "inherit"
+    stdio: "inherit",
   });
 }
 
@@ -38,7 +38,7 @@ try {
   fs.writeFileSync(path.join(temp, "astro-publish-kit.config.mjs"), fakeConfig);
   fs.writeFileSync(
     path.join(temp, "public/favicon.svg"),
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Template Smoke Site"><rect width="64" height="64" rx="12"/><text x="32" y="42" text-anchor="middle" font-size="32" fill="white">T</text></svg>\n'
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-label="Template Smoke Site"><rect width="64" height="64" rx="12"/><text x="32" y="42" text-anchor="middle" font-size="32" fill="white">T</text></svg>\n',
   );
 
   run(["run", "new-post", "--", "template-smoke"]);
@@ -47,10 +47,7 @@ try {
   const dist = path.join(temp, "dist");
   const textFiles = walk(dist).filter((file) => /\.(?:html?|xml|txt|json|svg|css)$/i.test(file));
   const forbidden = ["oyjq0000", "astropublishkit.pages.dev", "https://example.com"];
-  const demoBrandPages = new Set([
-    "posts/getting-started/index.html",
-    "posts/publishing-workflow/index.html"
-  ]);
+  const demoBrandPages = new Set(["posts/getting-started/index.html", "posts/publishing-workflow/index.html"]);
   const errors = [];
   for (const file of textFiles) {
     const relative = path.relative(dist, file).split(path.sep).join("/");

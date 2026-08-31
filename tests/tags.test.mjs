@@ -17,7 +17,7 @@ test("case variants remain distinct labels but collision detection protects thei
   assert.equal(summaries.length, 2);
   const collisions = taxonomySlugCollisions([
     { value: "Astro", file: "one.md" },
-    { value: "astro", file: "two.md" }
+    { value: "astro", file: "two.md" },
   ]);
   assert.equal(collisions.length, 1);
   assert.equal(collisions[0].slug, "astro");

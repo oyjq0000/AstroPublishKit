@@ -7,10 +7,13 @@ test("structured data graph keeps one schema context and preserves items", () =>
   const graph = structuredDataGraph([
     { "@context": "https://schema.org", "@type": "WebSite", name: "Example" },
     { "@type": "Article", headline: "A useful article" },
-    { "@type": "BreadcrumbList", itemListElement: [] }
+    { "@type": "BreadcrumbList", itemListElement: [] },
   ]);
   assert.equal(graph["@context"], "https://schema.org");
-  assert.deepEqual(graph["@graph"].map((item) => item["@type"]), ["WebSite", "Article", "BreadcrumbList"]);
+  assert.deepEqual(
+    graph["@graph"].map((item) => item["@type"]),
+    ["WebSite", "Article", "BreadcrumbList"],
+  );
   assert.equal("@context" in graph["@graph"][0], false);
 });
 

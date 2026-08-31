@@ -18,8 +18,11 @@ export async function GET() {
     "## Published posts",
     ...posts
       .filter(isDiscoverablePost)
-      .map((post) => `- [${post.data.title}](${new URL(postUrl(post), `${kit.site.url}/`).href}): ${post.data.description}`),
-    ""
+      .map(
+        (post) =>
+          `- [${post.data.title}](${new URL(postUrl(post), `${kit.site.url}/`).href}): ${post.data.description}`,
+      ),
+    "",
   ];
   return new Response(lines.join("\n"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }

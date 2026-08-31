@@ -2,13 +2,18 @@
 import kit from "../../astro-publish-kit.config.mjs";
 const year = new Date().getFullYear();
 ---
+
 <footer class="site-footer">
   <div class="shell footer-inner">
     <p>© {year} {kit.site.copyright}.</p>
     <div class="footer-links">
-      {kit.social.map((item: { label: string; href: string }) => (
-        <a href={item.href} rel="noopener noreferrer">{item.label}</a>
-      ))}
+      {
+        kit.social.map((item: { label: string; href: string }) => (
+          <a href={item.href} rel="noopener noreferrer">
+            {item.label}
+          </a>
+        ))
+      }
       <a href="/rss.xml">RSS</a>
     </div>
   </div>

@@ -9,13 +9,13 @@ This is the default deployment path for most users.
 1. Connect the GitHub repository in Cloudflare Pages.
 2. Use the following production settings:
 
-| Field | Value |
-| --- | --- |
-| Production branch | `main` |
-| Build command | `npm run build:production` |
-| Output directory | `dist` |
-| `SITE_URL` | `https://your-domain.example` |
-| Node version | `22.13.0` or compatible Node 22 |
+| Field             | Value                           |
+| ----------------- | ------------------------------- |
+| Production branch | `main`                          |
+| Build command     | `npm run build:production`      |
+| Output directory  | `dist`                          |
+| `SITE_URL`        | `https://your-domain.example`   |
+| Node version      | `22.13.0` or compatible Node 22 |
 
 `build:production` validates `SITE_URL` before Astro/Pagefind run, preventing a successful deployment with placeholder canonical URLs.
 

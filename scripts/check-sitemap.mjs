@@ -84,7 +84,8 @@ for (const file of sitemapFiles) {
     }
     if (url.origin !== expectedOrigin) errors.push(`${loc} uses unexpected origin; expected ${expectedOrigin}`);
     if (url.search || url.hash) errors.push(`${loc} must not contain a query or fragment`);
-    if (url.pathname !== "/" && !url.pathname.endsWith("/")) errors.push(`${loc} must follow the trailing-slash page URL convention`);
+    if (url.pathname !== "/" && !url.pathname.endsWith("/"))
+      errors.push(`${loc} must follow the trailing-slash page URL convention`);
     if (entries.has(url.href)) errors.push(`duplicate sitemap URL: ${url.href}`);
     entries.set(url.href, { url, lastmod });
     try {
@@ -100,7 +101,11 @@ for (const file of walk(postsRoot).filter((file) => /\.(md|mdx)$/.test(file))) {
   const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) continue;
   const frontmatter = match[1];
-  const relative = path.relative(postsRoot, file).split(path.sep).join("/").replace(/\.(md|mdx)$/, "");
+  const relative = path
+    .relative(postsRoot, file)
+    .split(path.sep)
+    .join("/")
+    .replace(/\.(md|mdx)$/, "");
   const href = new URL(`/posts/${relative}/`, `${expectedOrigin}/`).href;
   const draft = scalarValue(frontmatter, "draft") === "true";
   const noindex = scalarValue(frontmatter, "noindex") === "true";

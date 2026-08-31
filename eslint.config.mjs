@@ -12,24 +12,24 @@ const runtimeGlobals = {
   Response: "readonly",
   URL: "readonly",
   URLSearchParams: "readonly",
-  window: "readonly"
+  window: "readonly",
 };
 
 export default [
   {
-    ignores: [".astro/**", "dist/**", "node_modules/**", "public/pagefind/**"]
+    ignores: [".astro/**", "dist/**", "node_modules/**", "public/pagefind/**"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs["flat/recommended"],
   {
     files: ["**/*.{js,mjs,ts,astro}"],
-    languageOptions: { globals: runtimeGlobals }
+    languageOptions: { globals: runtimeGlobals },
   },
   {
     files: ["**/*.astro"],
     rules: {
-      "no-undef": "off"
-    }
-  }
+      "no-undef": "off",
+    },
+  },
 ];

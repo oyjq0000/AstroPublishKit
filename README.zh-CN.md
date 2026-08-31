@@ -137,15 +137,15 @@ npm run build && npm run preview
 
 ## 质量门禁
 
-| 检查 | 作用 |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript 正确性 |
-| `npm run test` | 工具函数回归测试 |
-| `npm run check:content` | Frontmatter、内容约定与 taxonomy slug 冲突 |
-| `npm run check:safety` | 常见 secret 模式与误提交的环境文件 |
-| `npm run build` | 最终静态输出 + Pagefind 索引 |
+| 检查                     | 作用                                         |
+| ------------------------ | -------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript 正确性                    |
+| `npm run test`           | 工具函数回归测试                             |
+| `npm run check:content`  | Frontmatter、内容约定与 taxonomy slug 冲突   |
+| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件           |
+| `npm run build`          | 最终静态输出 + Pagefind 索引                 |
 | `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
-| `npm run check` | typecheck + tests + content + safety + build |
+| `npm run check`          | typecheck + tests + content + safety + build |
 
 CI 使用 `npm ci` 安装依赖，先运行 `npm run check`，再运行模板回归检查。
 
@@ -153,12 +153,12 @@ CI 使用 `npm ci` 安装依赖，先运行 `npm run check`，再运行模板回
 
 绝大多数用户建议直接把 GitHub 仓库连接到 Cloudflare Pages：
 
-| 配置项 | 值 |
-| --- | --- |
-| 生产分支 | `main` |
-| 构建命令 | `npm run build:production` |
-| 构建输出目录 | `dist` |
-| `SITE_URL` | 你的生产 HTTPS Origin |
+| 配置项         | 值                         |
+| -------------- | -------------------------- |
+| 生产分支       | `main`                     |
+| 构建命令       | `npm run build:production` |
+| 构建输出目录   | `dist`                     |
+| `SITE_URL`     | 你的生产 HTTPS Origin      |
 | `NODE_VERSION` | `22.13.0` 或兼容的 Node 22 |
 
 仓库输出普通静态文件，因此不需要 Cloudflare Adapter。

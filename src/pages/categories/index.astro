@@ -4,9 +4,18 @@ import { getCategorySummaries, getPublishedPosts } from "../../lib/content";
 import { withTrailingSlash } from "../../lib/urls.mjs";
 const categories = getCategorySummaries(await getPublishedPosts());
 ---
+
 <BaseLayout title="Categories" description="Browse published posts by category.">
-  <section class="shell page-header"><p class="eyebrow">Explore</p><h1>Categories</h1><p>Broad sections for published posts.</p></section>
+  <section class="shell page-header">
+    <p class="eyebrow">Explore</p><h1>Categories</h1><p>Broad sections for published posts.</p>
+  </section>
   <section class="shell chip-cloud">
-    {categories.map((category) => <a href={withTrailingSlash(`/categories/${category.slug}`)}>{category.name} <span>{category.count}</span></a>)}
+    {
+      categories.map((category) => (
+        <a href={withTrailingSlash(`/categories/${category.slug}`)}>
+          {category.name} <span>{category.count}</span>
+        </a>
+      ))
+    }
   </section>
 </BaseLayout>

@@ -7,12 +7,15 @@ export async function getStaticPaths() {
   const posts = await getPublishedPosts();
   return getTagSummaries(posts).map((tag) => ({
     params: { tag: tag.slug },
-    props: { name: tag.name, posts: posts.filter((post) => post.data.tags.includes(tag.name)) }
+    props: { name: tag.name, posts: posts.filter((post) => post.data.tags.includes(tag.name)) },
   }));
 }
 const { name, posts } = Astro.props;
 ---
+
 <BaseLayout title={`Tag: ${name}`} description={`Posts tagged ${name}.`}>
-  <section class="shell page-header"><p class="eyebrow">Tag</p><h1>#{name}</h1><p>{posts.length} matching {posts.length === 1 ? "post" : "posts"}.</p></section>
+  <section class="shell page-header">
+    <p class="eyebrow">Tag</p><h1>#{name}</h1><p>{posts.length} matching {posts.length === 1 ? "post" : "posts"}.</p>
+  </section>
   <section class="shell post-grid section-block">{posts.map((post) => <PostCard post={post} />)}</section>
 </BaseLayout>

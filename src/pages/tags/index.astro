@@ -4,9 +4,18 @@ import { getPublishedPosts, getTagSummaries } from "../../lib/content";
 import { withTrailingSlash } from "../../lib/urls.mjs";
 const tags = getTagSummaries(await getPublishedPosts());
 ---
+
 <BaseLayout title="Tags" description="Browse published posts by tag.">
-  <section class="shell page-header"><p class="eyebrow">Explore</p><h1>Tags</h1><p>Specific topics used across published posts.</p></section>
+  <section class="shell page-header">
+    <p class="eyebrow">Explore</p><h1>Tags</h1><p>Specific topics used across published posts.</p>
+  </section>
   <section class="shell chip-cloud">
-    {tags.map((tag) => <a href={withTrailingSlash(`/tags/${tag.slug}`)}>#{tag.name} <span>{tag.count}</span></a>)}
+    {
+      tags.map((tag) => (
+        <a href={withTrailingSlash(`/tags/${tag.slug}`)}>
+          #{tag.name} <span>{tag.count}</span>
+        </a>
+      ))
+    }
   </section>
 </BaseLayout>

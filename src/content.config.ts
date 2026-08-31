@@ -19,10 +19,10 @@ const posts = defineCollection({
     cover: z
       .object({
         src: z.string(),
-        alt: z.string().min(1)
+        alt: z.string().min(1),
       })
-      .optional()
-  })
+      .optional(),
+  }),
 });
 
 export const collections = { posts };

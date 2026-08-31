@@ -93,7 +93,8 @@ function inspectHeadings(body, relative) {
   for (const match of clean.matchAll(/^(#{1,6})\s+/gm)) {
     const depth = match[1].length;
     if (depth === 1) continue;
-    if (depth > previousDepth + 1) warnings.push(`${relative}: heading level jumps from H${previousDepth} to H${depth}`);
+    if (depth > previousDepth + 1)
+      warnings.push(`${relative}: heading level jumps from H${previousDepth} to H${depth}`);
     previousDepth = depth;
   }
 }
@@ -129,7 +130,8 @@ for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
   const date = new Date(scalarValue(frontmatter, "lastModified") || scalarValue(frontmatter, "date"));
   if (Number.isFinite(date.valueOf())) {
     const ageDays = (Date.now() - date.valueOf()) / 86_400_000;
-    if (ageDays > staleAfterDays) warnings.push(`${relative}: content has not been updated in more than ${staleAfterDays} days`);
+    if (ageDays > staleAfterDays)
+      warnings.push(`${relative}: content has not been updated in more than ${staleAfterDays} days`);
   }
 
   const category = scalarValue(frontmatter, "category");
@@ -147,10 +149,12 @@ for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
 
 for (const [kind, entries] of [
   ["category", categoryEntries],
-  ["tag", tagEntries]
+  ["tag", tagEntries],
 ]) {
   for (const collision of taxonomySlugCollisions(entries)) {
-    errors.push(`${collision.second.file}: ${kind} "${collision.second.value}" collides with "${collision.first.value}" at slug "${collision.slug}" (${collision.first.file})`);
+    errors.push(
+      `${collision.second.file}: ${kind} "${collision.second.value}" collides with "${collision.first.value}" at slug "${collision.slug}" (${collision.first.file})`,
+    );
   }
 }
 

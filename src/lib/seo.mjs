@@ -6,6 +6,6 @@ export function structuredDataGraph(items) {
       const copy = { ...item };
       delete copy["@context"];
       return copy;
-    })
+    }),
   };
 }
