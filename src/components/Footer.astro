@@ -6,7 +6,7 @@ const year = new Date().getFullYear();
   <div class="shell footer-inner">
     <p>© {year} {kit.site.author.name}. Built with AstroPublishKit.</p>
     <div class="footer-links">
-      {kit.social.map((item) => <a href={item.href} rel="me">{item.label}</a>)}
+      {kit.social.map((item: { label: string; href: string }) => <a href={item.href} rel="me">{item.label}</a>)}
       <a href="/rss.xml">RSS</a>
     </div>
   </div>

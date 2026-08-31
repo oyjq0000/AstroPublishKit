@@ -64,7 +64,7 @@ const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonL
         document.documentElement.dataset.theme = saved || preferred;
       })();
     </script>
-    <script type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": ldItems.map(({ ["@context"]: _context, ...item }) => item) })}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": ldItems.map(({ ["@context"]: _context, ...item }) => item) })}></script>
     <Analytics />
   </head>
   <body>

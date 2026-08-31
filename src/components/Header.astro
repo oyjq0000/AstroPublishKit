@@ -11,7 +11,7 @@ const pathname = Astro.url.pathname;
       <span>{kit.site.shortTitle}</span>
     </a>
     <nav class="primary-nav" aria-label="Primary navigation">
-      {kit.navigation.map((item) => (
+      {kit.navigation.map((item: { label: string; href: string }) => (
         <a href={item.href} aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? "page" : undefined}>
           {item.label}
         </a>
