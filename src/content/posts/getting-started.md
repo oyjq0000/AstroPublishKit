@@ -1,5 +1,5 @@
 ---
-title: Start publishing with AstroPublishKit
+title: Start publishing with this starter
 description: Configure the starter, create your first post, run the quality checks, and produce a static build ready for deployment.
 date: 2026-08-31
 category: Getting Started

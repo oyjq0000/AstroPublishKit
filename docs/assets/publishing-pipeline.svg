@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">AstroPublishKit publishing pipeline</title>
+  <desc id="desc">Markdown and MDX flow through typed content collections and Astro static build into discovery outputs, Pagefind, dist, and Cloudflare deployment.</desc>
+  <style>
+    .bg{fill:#f7f7f2}.box{fill:#fff;stroke:#d7d7cd;stroke-width:2}.main{fill:#171717}.muted{fill:#66665f}.accent{fill:#2f6956}.label{font:700 24px ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.small{font:500 18px ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.arrow{stroke:#77776e;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    @media (prefers-color-scheme:dark){.bg{fill:#171915}.box{fill:#21241e;stroke:#3a3f36}.main{fill:#f2f2ec}.muted{fill:#b8b8ae}.accent{fill:#8bb8a4}.arrow{stroke:#9b9b92}}
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#77776e"/></marker></defs>
+  <rect class="bg" width="1200" height="420" rx="28"/>
+  <text x="60" y="62" class="label accent">Publishing infrastructure, not a runtime stack</text>
+
+  <rect class="box" x="60" y="112" width="190" height="110" rx="18"/>
+  <text x="155" y="158" text-anchor="middle" class="label main">Markdown / MDX</text>
+  <text x="155" y="190" text-anchor="middle" class="small muted">content source</text>
+
+  <path class="arrow" d="M255 167 H315"/>
+  <rect class="box" x="325" y="112" width="220" height="110" rx="18"/>
+  <text x="435" y="153" text-anchor="middle" class="label main">Typed Content</text>
+  <text x="435" y="183" text-anchor="middle" class="label main">Collections</text>
+
+  <path class="arrow" d="M550 167 H610"/>
+  <rect class="box" x="620" y="112" width="190" height="110" rx="18"/>
+  <text x="715" y="153" text-anchor="middle" class="label main">Astro static</text>
+  <text x="715" y="183" text-anchor="middle" class="label main">build</text>
+
+  <path class="arrow" d="M815 167 H875"/>
+  <rect class="box" x="885" y="92" width="255" height="150" rx="18"/>
+  <text x="1012" y="132" text-anchor="middle" class="label main">Static outputs</text>
+  <text x="1012" y="166" text-anchor="middle" class="small muted">HTML · RSS · Sitemap</text>
+  <text x="1012" y="196" text-anchor="middle" class="small muted">robots.txt · llms.txt</text>
+  <text x="1012" y="226" text-anchor="middle" class="small muted">SEO metadata</text>
+
+  <path class="arrow" d="M1012 248 V287"/>
+  <rect class="box" x="885" y="298" width="255" height="72" rx="18"/>
+  <text x="1012" y="343" text-anchor="middle" class="label main">Pagefind indexing</text>
+
+  <path class="arrow" d="M880 334 H770"/>
+  <rect class="box" x="620" y="298" width="140" height="72" rx="18"/>
+  <text x="690" y="343" text-anchor="middle" class="label main">dist/</text>
+
+  <path class="arrow" d="M615 334 H545"/>
+  <rect class="box" x="250" y="286" width="285" height="96" rx="18"/>
+  <text x="392" y="328" text-anchor="middle" class="label main">Cloudflare Pages</text>
+  <text x="392" y="358" text-anchor="middle" class="small muted">or Workers Static Assets</text>
+</svg>

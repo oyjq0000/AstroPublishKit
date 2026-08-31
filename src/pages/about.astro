@@ -1,28 +1,25 @@
 ---
+import kit from "../../astro-publish-kit.config.mjs";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="About" description="About AstroPublishKit and this public demo site.">
+<BaseLayout title="About" description={`About ${kit.site.title}.`}>
   <article class="shell prose standalone-prose">
-    <h1>About AstroPublishKit</h1>
+    <h1>About {kit.site.title}</h1>
+    <p>{kit.site.description}</p>
+    <h2>About this page</h2>
     <p>
-      AstroPublishKit is a static-first publishing foundation for blogs, technical notes, and
-      content-focused sites. This site is the public reference deployment of the starter.
+      This starter includes example About content so a new site is complete on first build. Replace
+      this page with your own introduction, editorial focus, or project information before launch.
     </p>
-    <h2>What belongs in the kit</h2>
+    <h2>Author</h2>
     <p>
-      Typed content, discoverability, static search, quality checks, and deployment defaults belong
-      here. Your brand, editorial voice, analytics accounts, and production content do not.
+      {kit.site.author.url ? <a href={kit.site.author.url}>{kit.site.author.name}</a> : kit.site.author.name}
     </p>
-    <h2>Where to customize</h2>
-    <p>
-      Start with <code>astro-publish-kit.config.mjs</code>, then adjust
-      <code>src/styles/global.css</code> if you want a different visual system. Optional integrations
-      stay disabled until you provide their environment variables.
-    </p>
-    <h2>Source code</h2>
-    <p>
-      The project is MIT licensed and maintained on
-      <a href="https://github.com/oyjq0000/AstroPublishKit">GitHub</a>.
-    </p>
+    {kit.site.repository && (
+      <>
+        <h2>Source</h2>
+        <p><a href={kit.site.repository}>Repository</a></p>
+      </>
+    )}
   </article>
 </BaseLayout>

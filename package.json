@@ -1,7 +1,7 @@
 {
   "name": "astro-publish-kit",
-  "version": "0.1.0",
-  "private": false,
+  "version": "0.1.1",
+  "private": true,
   "type": "module",
   "description": "A clean, static-first Astro publishing starter with SEO, search, quality gates, and Cloudflare deployment.",
   "license": "MIT",
@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
+    "build:production": "node scripts/check-production-config.mjs && npm run build",
     "preview": "astro preview",
     "typecheck": "astro check",
     "test": "node --test tests/*.test.mjs",
@@ -18,7 +19,8 @@
     "check:safety": "node scripts/check-safety.mjs",
     "check": "npm run typecheck && npm run test && npm run check:content && npm run check:safety && npm run build",
     "new-post": "node scripts/new-post.mjs",
-    "deploy:cf": "npm run build && wrangler deploy"
+    "deploy:cf": "npm run build:production && wrangler deploy",
+    "check:template": "node scripts/check-template.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.8",

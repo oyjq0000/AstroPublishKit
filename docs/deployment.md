@@ -1,31 +1,47 @@
 # Deployment
 
-AstroPublishKit builds a static `dist/` directory. The default project does not require SSR, a database, or a Cloudflare adapter.
+AstroPublishKit builds a plain static `dist/` directory. The default project does not require SSR, a database, a Node server, or a Cloudflare adapter.
 
-## Cloudflare Workers Static Assets
+## Cloudflare Pages — recommended
 
-1. Change the `name` in `wrangler.jsonc`.
+This is the default deployment path for most users.
+
+1. Connect the GitHub repository in Cloudflare Pages.
+2. Use the following production settings:
+
+| Field | Value |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `npm run build:production` |
+| Output directory | `dist` |
+| `SITE_URL` | `https://your-domain.example` |
+| Node version | `22.13.0` or compatible Node 22 |
+
+`build:production` validates `SITE_URL` before Astro/Pagefind run, preventing a successful deployment with placeholder canonical URLs.
+
+Preview deployments can use `npm run build` when you intentionally do not want the production-origin guard, but evaluate SEO output against the production build before launch.
+
+## Workers Static Assets — advanced
+
+Use this path for Wrangler-driven deployment or when you expect to add Worker logic later.
+
+1. Change `name` in `wrangler.jsonc`.
 2. Set `SITE_URL` to the final HTTPS origin.
 3. Run:
 
 ```bash
-npm install
+npm ci
 npm run deploy:cf
 ```
 
-`wrangler.jsonc` points `assets.directory` at `./dist`. There is intentionally no Worker `main` entry.
+The command runs the production config guard before building and deploying. `wrangler.jsonc` serves `./dist`, uses `auto-trailing-slash` HTML handling, and maps unknown paths to the project's `404.html` with HTTP 404. There is intentionally no Worker `main` entry.
 
-## Cloudflare Pages
+Before a release you can validate configuration without uploading:
 
-Connect the repository in Cloudflare Pages and use:
-
-- production branch: `main`
-- build command: `npm run build`
-- output directory: `dist`
-- environment variable: `SITE_URL=https://your-domain.example`
-
-Preview deployments can use the same build command.
+```bash
+SITE_URL=https://example.org npm run deploy:cf -- --dry-run
+```
 
 ## Other static hosts
 
-Any host that can serve the contents of `dist/` works. The only requirement for correct canonical/SEO URLs is a production `SITE_URL`.
+Any platform that serves the contents of `dist/` can host the site. Use `npm run build:production` with the final `SITE_URL`, then upload `dist/` according to that host's static-site workflow.

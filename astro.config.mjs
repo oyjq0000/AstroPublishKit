@@ -4,6 +4,7 @@ import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import kit from "./astro-publish-kit.config.mjs";
+import { withTrailingSlash } from "./src/lib/urls.mjs";
 
 const postsRoot = path.resolve("src/content/posts");
 
@@ -24,7 +25,7 @@ const sitemapMeta = new Map();
 for (const file of walk(postsRoot).filter((file) => /\.(md|mdx)$/.test(file))) {
   const source = fs.readFileSync(file, "utf8");
   const relative = path.relative(postsRoot, file).replace(/\\/g, "/").replace(/\.(md|mdx)$/, "");
-  const pathname = `/posts/${relative}`;
+  const pathname = withTrailingSlash(`/posts/${relative}`);
   const noindex = frontmatterValue(source, "noindex") === "true";
   const lastmod = frontmatterValue(source, "lastModified") || frontmatterValue(source, "date");
   sitemapMeta.set(pathname, { noindex, lastmod });
@@ -32,8 +33,7 @@ for (const file of walk(postsRoot).filter((file) => /\.(md|mdx)$/.test(file))) {
 
 function pathnameOf(value) {
   try {
-    const pathname = new URL(value).pathname;
-    return pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+    return new URL(value).pathname;
   } catch {
     return value;
   }
@@ -42,7 +42,7 @@ function pathnameOf(value) {
 export default defineConfig({
   site: kit.site.url,
   output: "static",
-  trailingSlash: "never",
+  trailingSlash: "always",
   integrations: [
     mdx(),
     sitemap({

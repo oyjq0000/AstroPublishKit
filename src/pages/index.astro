@@ -10,12 +10,12 @@ const recent = (featured.length ? featured : posts).slice(0, 6);
 ---
 <BaseLayout>
   <section class="hero shell">
-    <p class="eyebrow">Static-first publishing starter</p>
+    <p class="eyebrow">{kit.home.eyebrow}</p>
     <h1>{kit.home.heading}</h1>
     <p class="hero-copy">{kit.home.intro}</p>
     <div class="hero-actions">
-      <a class="button" href="/posts">Read the demo</a>
-      <a class="button button-secondary" href="https://github.com/oyjq0000/AstroPublishKit">View repository</a>
+      <a class="button" href={kit.home.primaryAction.href}>{kit.home.primaryAction.label}</a>
+      <a class="button button-secondary" href={kit.home.secondaryAction.href}>{kit.home.secondaryAction.label}</a>
     </div>
   </section>
   <section class="shell section-block">
@@ -24,7 +24,7 @@ const recent = (featured.length ? featured : posts).slice(0, 6);
         <p class="eyebrow">Content</p>
         <h2>Recent posts</h2>
       </div>
-      <a href="/archive">Browse archive →</a>
+      <a href="/archive/">Browse archive →</a>
     </div>
     <div class="post-grid">
       {recent.map((post) => <PostCard post={post} />)}

@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { slugify } from "./text.mjs";
+import { withTrailingSlash } from "./urls.mjs";
 
 export type Post = CollectionEntry<"posts">;
 
@@ -13,7 +14,7 @@ export async function getPublishedPosts() {
 }
 
 export function postUrl(post: Post) {
-  return `/posts/${post.id}`;
+  return withTrailingSlash(`/posts/${post.id}`);
 }
 
 export function getTagSummaries(posts: Post[]) {
