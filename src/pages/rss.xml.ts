@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
 import kit from "../../astro-publish-kit.config.mjs";
-import { getPublishedPosts } from "../lib/content";
+import { getPublishedPosts, postUrl } from "../lib/content";
 
 export async function GET() {
   const posts = await getPublishedPosts();
@@ -12,7 +12,7 @@ export async function GET() {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.date,
-      link: `/posts/${post.id}`,
+      link: postUrl(post),
       categories: post.data.tags
     }))
   });

@@ -3,6 +3,7 @@ import kit from "../../astro-publish-kit.config.mjs";
 import Analytics from "../components/Analytics.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import { absolutePageUrl } from "../lib/urls.mjs";
 import "../styles/global.css";
 
 interface Props {
@@ -17,20 +18,20 @@ interface Props {
 const {
   title,
   description = kit.site.description,
-  image = kit.site.defaultOgImage,
+  image = kit.site.brand.defaultOgImage,
   noindex = false,
   type = "website",
   jsonLd
 } = Astro.props;
 
 const pageTitle = title ? `${title} · ${kit.site.title}` : kit.site.title;
-const canonical = new URL(Astro.url.pathname, kit.site.url).href;
-const imageUrl = new URL(image, kit.site.url).href;
+const canonical = absolutePageUrl(Astro.url.pathname, kit.site.url);
+const imageUrl = new URL(image, `${kit.site.url}/`).href;
 const websiteLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: kit.site.title,
-  url: kit.site.url,
+  url: new URL("/", `${kit.site.url}/`).href,
   description: kit.site.description
 };
 const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonLd])] : [websiteLd];
@@ -45,7 +46,7 @@ const ldItems = jsonLd ? [websiteLd, ...(Array.isArray(jsonLd) ? jsonLd : [jsonL
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={kit.site.brand.favicon} />
     <link rel="alternate" type="application/rss+xml" title={`${kit.site.title} RSS`} href="/rss.xml" />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={pageTitle} />
