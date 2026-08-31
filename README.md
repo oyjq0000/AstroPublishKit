@@ -30,6 +30,10 @@ AstroPublishKit focuses on **publishing infrastructure first**:
 
 The included visual layer is intentionally minimal and replaceable. The default site builds to plain static files in `dist/`; no database, Node server, SSR runtime, or search backend is required.
 
+<p align="center">
+  <img src="docs/assets/publishing-pipeline.svg" alt="AstroPublishKit publishing pipeline from Markdown and MDX to static Cloudflare deployment" />
+</p>
+
 ## 5-minute setup
 
 Requirements: Node.js 22.13+.
@@ -68,6 +72,26 @@ npm run dev
 - content checks, safety checks, unit tests and template regression checks
 - GitHub Actions CI
 - Cloudflare Pages plus optional Workers Static Assets deployment
+
+## Visual tour
+
+Article layout with TOC, metadata and an MDX Callout.
+
+<p align="center">
+  <img src="docs/assets/demo-article.png" alt="AstroPublishKit article page" />
+</p>
+
+Pagefind results generated entirely from the static build.
+
+<p align="center">
+  <img src="docs/assets/demo-search.png" alt="AstroPublishKit Pagefind search results" />
+</p>
+
+390px mobile layout with the native navigation menu open.
+
+<p align="center">
+  <img src="docs/assets/demo-mobile.png" width="390" alt="AstroPublishKit mobile navigation and homepage" />
+</p>
 
 ## Configuration
 

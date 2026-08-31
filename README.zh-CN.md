@@ -30,6 +30,10 @@ AstroPublishKit 优先解决的是 **发布基础设施**，而不只是提供�
 
 自带视觉层刻意保持轻量，方便替换。默认构建结果就是 `dist/` 中的普通静态文件；不需要数据库、Node 服务、SSR Runtime 或独立搜索后端。
 
+<p align="center">
+  <img src="docs/assets/publishing-pipeline.svg" alt="AstroPublishKit 从 Markdown 和 MDX 到 Cloudflare 静态部署的发布流水线" />
+</p>
+
 ## 5 分钟完成配置
 
 环境要求：Node.js 22.13+。
@@ -68,6 +72,26 @@ npm run dev
 - 内容检查、安全检查、单元测试与模板回归检查
 - GitHub Actions CI
 - Cloudflare Pages，以及可选的 Workers Static Assets 部署
+
+## 界面预览
+
+文章页：TOC、元数据和 MDX Callout。
+
+<p align="center">
+  <img src="docs/assets/demo-article.png" alt="AstroPublishKit article page" />
+</p>
+
+Pagefind：直接从静态构建产物生成搜索结果。
+
+<p align="center">
+  <img src="docs/assets/demo-search.png" alt="AstroPublishKit Pagefind search results" />
+</p>
+
+390px 移动端：展开原生导航菜单后的实际布局。
+
+<p align="center">
+  <img src="docs/assets/demo-mobile.png" width="390" alt="AstroPublishKit mobile navigation and homepage" />
+</p>
 
 ## 配置
 
