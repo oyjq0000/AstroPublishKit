@@ -2,6 +2,10 @@ export function isPublishedPost(post) {
   return !post.data.draft;
 }
 
+export function isPreviewablePost(post, includeDrafts = false) {
+  return includeDrafts || isPublishedPost(post);
+}
+
 export function isDiscoverablePost(post) {
   return isPublishedPost(post) && !post.data.noindex;
 }

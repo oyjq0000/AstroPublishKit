@@ -5,12 +5,13 @@ import Giscus from "../../components/Giscus.astro";
 import Share from "../../components/Share.astro";
 import Toc from "../../components/Toc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { isPreviewablePost } from "../../lib/posts.mjs";
 import { estimateReadingMinutes, slugify } from "../../lib/text.mjs";
 import { absolutePageUrl, withTrailingSlash } from "../../lib/urls.mjs";
 import kit from "../../../astro-publish-kit.config.mjs";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  const posts = await getCollection("posts", (post) => isPreviewablePost(post, import.meta.env.DEV));
   return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
 }
 

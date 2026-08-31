@@ -41,16 +41,18 @@ Use `npm run format` locally when formatting changes are needed.
 
 ## `test`
 
-Runs the Node test suite. The v0.1.1 suite covers:
+Runs the Node test suite. The suite covers:
 
 - URL and canonical normalization;
 - reading-time and text helpers;
-- draft / noindex publishing semantics;
+- draft / noindex publishing semantics and development draft preview semantics;
 - date sorting and category / tag filtering;
 - taxonomy slug behavior, including Unicode and collisions;
-- JSON-LD graph assembly and SEO URL invariants.
+- JSON-LD graph assembly and SEO URL invariants;
+- authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
+- `new-post` default draft behavior and duplicate-file protection using synthetic temporary projects.
 
-Tests use synthetic fixtures rather than private production posts.
+Tests use synthetic fixtures rather than private production posts and do not require network or Cloudflare access.
 
 ## `check:config`
 
@@ -86,11 +88,23 @@ Non-blocking warnings include:
 - content that has not been updated for more than the configured stale threshold;
 - descriptions outside the recommended editorial length range.
 
+Diagnostics are author-facing and grouped by severity and file. A typical item looks like:
+
+```text
+WARN src/content/posts/example.md
+  Description is shorter than the recommended 50 characters.
+  Fix: Aim for 50-160 characters when practical.
+```
+
+The command ends with a compact summary of posts checked, errors and warnings. Warnings remain non-blocking.
+
 These checks are language-neutral; they do not encode Chinese- or English-specific writing rules.
 
 ## `build`
 
 Generates the static Astro site and then builds the Pagefind index from `dist/`. Later checks deliberately validate the generated output rather than only source files.
+
+Draft routes are available only during `npm run dev` for direct local author preview. A normal or production build still excludes drafts.
 
 ## `check:links`
 
@@ -128,7 +142,7 @@ Scans for common secret patterns and accidental environment-file commits. It rem
 
 ## `check:template`
 
-Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content and runs a production build. The generated output is scanned for identity leakage from the original demo/template.
+Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template.
 
 This is part of `npm run check`, so CI does not need a separate template step.
 

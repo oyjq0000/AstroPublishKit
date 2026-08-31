@@ -2,68 +2,126 @@
 
 Posts live in `src/content/posts/` and can use `.md` or `.mdx`.
 
+For the end-to-end create → write → preview → check → publish path, start with [Writing workflow](writing-workflow.md).
+
 ## Create a draft
+
+Run the guided creator:
+
+```bash
+npm run new-post
+```
+
+It suggests a slug from the title, validates the authoring fields, supports Markdown or MDX and creates a safe draft by default.
+
+The original non-interactive workflow remains available:
 
 ```bash
 npm run new-post -- my-post-slug
 ```
 
-The generated file starts with `draft: true`. Change it to `false` when the post is ready to publish.
+For MDX, use either form:
+
+```bash
+npm run new-post -- my-post-slug.mdx
+npm run new-post -- my-post-slug --mdx
+```
+
+The command refuses to overwrite an existing slug, even if the existing file uses the other supported extension. Successful creation prints the generated repository-relative path.
+
+List current drafts with:
+
+```bash
+npm run drafts
+```
 
 ## Frontmatter
 
+The schema and the post generator share the same core authoring rules. Generated posts use a stable field order, while optional fields are omitted when they are not needed.
+
+A complete example is:
+
 ```yaml
 ---
-title: A useful, specific title
-description: A standalone summary for readers and search results.
+title: "A useful, specific title"
+description: "A standalone summary for readers and search results."
 date: 2026-08-31
 lastModified: 2026-08-31
-category: Engineering
-tags: [Astro, Static Sites]
+category: "Engineering"
+tags: ["Astro", "Static Sites"]
 draft: false
 noindex: false
 featured: false
-author: Your Name
-lang: en
+author: "Your Name"
+lang: "en"
 cover:
-  src: /images/my-post-cover.webp
-  alt: Diagram showing the publishing workflow
+  src: "/images/posts/my-post/cover.webp"
+  alt: "Diagram showing the publishing workflow"
 ---
 ```
 
+You do not need to include every optional field in every article.
+
 ### Field behavior
 
-- `title`: 1–120 characters. The article route renders it as the page H1; do not add another Markdown H1 in the body.
-- `description`: 20–240 characters, reused for page metadata and previews.
-- `date`: publication date.
-- `lastModified`: optional; falls back to `date` for modified-time metadata.
-- `category`: one broad section for the article.
-- `tags`: zero or more specific topics.
-- `draft: true`: the page is not generated.
-- `noindex: true`: the page still builds and is directly accessible, but gets robots `noindex` and is excluded from the sitemap, Pagefind body index and llms.txt.
-- `featured`: allows the homepage to prefer the article in its recent-post selection.
-- `author`: optional single-post override; when omitted, `site.author.name` from the main config is used.
-- `lang`: article metadata only in v0.1.x; it does not enable multilingual routes, translated UI or hreflang.
+- `title`: required, 1–120 characters. The article route renders it as the page H1; do not add another Markdown H1 in the body.
+- `description`: required, 20–240 characters. It is reused for page metadata and article previews; the content checker recommends 50–160 characters when practical.
+- `date`: required publication date. Use `YYYY-MM-DD` in source frontmatter for a predictable human-readable format.
+- `lastModified`: optional. Use `YYYY-MM-DD`; when omitted, metadata falls back to `date`.
+- `category`: one broad section for the article. The default is `General`.
+- `tags`: zero or more specific topics. The generator writes a stable inline array.
+- `draft`: defaults to `false` at schema level, while newly generated posts deliberately start as `true`. Draft pages are available by direct URL during `npm run dev` but are excluded from production builds and normal published-content lists.
+- `noindex`: defaults to `false`. When `true`, the published page still builds and is directly accessible, but gets robots `noindex` and is excluded from sitemap discovery, Pagefind body indexing and llms.txt.
+- `featured`: defaults to `false` and allows the homepage to prefer the article in its recent-post selection.
+- `author`: optional single-post author name override. When omitted, `site.author.name` from the main config is used.
+- `lang`: defaults to `en` and remains article metadata only in v0.2.0. It does not enable multilingual routes, translated UI, fallback behavior or hreflang.
+- `cover`: optional object containing a public root-relative `src` and non-empty `alt` text.
+
+## Draft preview and publishing
+
+Keep a work-in-progress article as:
+
+```yaml
+draft: true
+```
+
+Then run:
+
+```bash
+npm run dev
+```
+
+and open the article directly, for example `/posts/my-post/`. Development mode includes the draft route specifically for local author preview. Production builds still exclude it.
+
+When the article is ready, change `draft` to `false`, run `npm run check`, and use `npm run build && npm run preview` for final static-output review.
 
 ## Cover images
 
-Put public cover files under `public/`, for example:
+Cover paths use Astro's public-root semantics. Put a file under `public/`, then reference it without the `public` prefix.
+
+A recommended organizational convention is:
 
 ```text
-public/images/my-post-cover.webp
+public/images/posts/<slug>/
 ```
 
-Then reference them with a root-relative URL:
+For example:
+
+```text
+public/images/posts/my-post/cover.webp
+```
+
+is referenced as:
 
 ```yaml
 cover:
-  src: /images/my-post-cover.webp
-  alt: Screenshot of the search results page
+  src: "/images/posts/my-post/cover.webp"
+  alt: "Screenshot of the search results page"
 ```
 
-`alt` is required and must be non-empty. The cover is displayed at the top of the article and is also used as that article's Open Graph image. If no cover is set, `site.brand.defaultOgImage` is used.
+The `public/images/posts/<slug>/` structure is a convention only; it is not required by the schema or build.
 
-A 1200×630 image is a practical default when the same asset should work well for social sharing; article-only covers can use another aspect ratio if the design requires it.
+`alt` is required whenever `cover` is present and must be non-empty. The cover is displayed at the top of the article, used as the article Open Graph/Twitter image, and included in Article structured data. If no cover is set, the layout falls back to `site.brand.defaultOgImage`; the starter default is the 1200×630 `public/og.png` asset.
 
 ## Taxonomy safety
 
@@ -71,10 +129,12 @@ A 1200×630 image is a practical default when the same asset should work well fo
 
 ## MDX components
 
-The starter includes small primitives:
+The starter includes three small primitives:
 
 - `Callout.astro`
 - `Accordion.astro`
 - `YouTube.astro`
 
-Import only what the article needs. The demo MDX article provides a compact reference for these components.
+They are optional and affect only `.mdx` articles that explicitly import them. Ordinary Markdown posts do not use the MDX component layer.
+
+See [MDX components](mdx-components.md) for props and minimal copyable examples.

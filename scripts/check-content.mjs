@@ -1,5 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  POST_DESCRIPTION_MIN_LENGTH,
+  POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH,
+  POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH,
+  frontmatterList,
+  frontmatterScalar,
+} from "../src/lib/content-rules.mjs";
 import { slugify } from "../src/lib/text.mjs";
 import { taxonomySlugCollisions } from "../src/lib/taxonomy.mjs";
 
@@ -9,6 +16,7 @@ const warnings = [];
 const tagEntries = [];
 const categoryEntries = [];
 const staleAfterDays = 365;
+let checkedPosts = 0;
 
 function walk(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -18,39 +26,12 @@ function walk(dir) {
   });
 }
 
-function unquote(value) {
-  const trimmed = value.trim();
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1).trim();
-  }
-  return trimmed;
+function addError(file, message, fix = "") {
+  errors.push({ file, message, fix });
 }
 
-function scalarValue(frontmatter, key) {
-  const match = frontmatter.match(new RegExp(`^${key}:\\s*(.*?)\\s*$`, "m"));
-  return match ? unquote(match[1]) : "";
-}
-
-function listValues(frontmatter, key) {
-  const line = frontmatter.match(new RegExp(`^${key}:\\s*(.*?)\\s*$`, "m"));
-  if (!line) return [];
-  const inline = line[1].trim();
-  if (inline.startsWith("[") && inline.endsWith("]")) {
-    const body = inline.slice(1, -1).trim();
-    return body ? body.split(",").map(unquote).filter(Boolean) : [];
-  }
-  if (inline) return [unquote(inline)].filter(Boolean);
-  const after = frontmatter.slice((line.index ?? 0) + line[0].length);
-  const values = [];
-  for (const blockLine of after.split("\n").slice(1)) {
-    const item = blockLine.match(/^\s+-\s+(.+?)\s*$/);
-    if (item) {
-      values.push(unquote(item[1]));
-      continue;
-    }
-    if (blockLine.trim() && !/^\s/.test(blockLine)) break;
-  }
-  return values.filter(Boolean);
+function addWarning(file, message, fix = "") {
+  warnings.push({ file, message, fix });
 }
 
 function stripFencedCode(source) {
@@ -70,18 +51,34 @@ function inspectInternalLinks(body, relative) {
     if (target.startsWith("<") && target.endsWith(">")) target = target.slice(1, -1);
     if (!target.startsWith("/") || target.startsWith("//")) continue;
     count += 1;
-    if (target.includes("\\")) errors.push(`${relative}: internal link "${target}" must use forward slashes`);
+    if (target.includes("\\")) {
+      addError(relative, `Internal link "${target}" must use forward slashes.`, "Replace backslashes with /.");
+    }
     let url;
     try {
       url = new URL(target, "https://internal.invalid");
       decodeURIComponent(url.pathname);
     } catch {
-      errors.push(`${relative}: malformed internal link "${target}"`);
+      addError(
+        relative,
+        `Malformed internal link "${target}".`,
+        "Use a valid root-relative URL such as /posts/example/.",
+      );
       continue;
     }
-    if (url.pathname.includes("//")) errors.push(`${relative}: internal link "${target}" contains duplicate slashes`);
+    if (url.pathname.includes("//")) {
+      addError(
+        relative,
+        `Internal link "${target}" contains duplicate slashes.`,
+        "Collapse repeated slashes in the path.",
+      );
+    }
     if (!isAssetPath(url.pathname) && url.pathname !== "/" && !url.pathname.endsWith("/")) {
-      errors.push(`${relative}: internal page link "${target}" must end with a trailing slash`);
+      addError(
+        relative,
+        `Internal page link "${target}" must end with a trailing slash.`,
+        `Use ${url.pathname}/ for page links.`,
+      );
     }
   }
   return count;
@@ -93,56 +90,111 @@ function inspectHeadings(body, relative) {
   for (const match of clean.matchAll(/^(#{1,6})\s+/gm)) {
     const depth = match[1].length;
     if (depth === 1) continue;
-    if (depth > previousDepth + 1)
-      warnings.push(`${relative}: heading level jumps from H${previousDepth} to H${depth}`);
+    if (depth > previousDepth + 1) {
+      addWarning(
+        relative,
+        `Heading level jumps from H${previousDepth} to H${depth}.`,
+        "Use sequential heading levels when practical.",
+      );
+    }
     previousDepth = depth;
   }
 }
 
 for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
+  checkedPosts += 1;
   const source = fs.readFileSync(file, "utf8");
   const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
   const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match) {
-    errors.push(`${relative}: missing valid YAML frontmatter fence`);
+    addError(
+      relative,
+      "Missing a valid YAML frontmatter fence.",
+      "Add a --- frontmatter block at the top of the file.",
+    );
     continue;
   }
   const [, frontmatter, body] = match;
   for (const key of ["title", "description", "date", "category", "tags"]) {
-    if (!new RegExp(`^${key}:`, "m").test(frontmatter)) errors.push(`${relative}: missing ${key}`);
+    if (!new RegExp(`^${key}:`, "m").test(frontmatter)) {
+      addError(relative, `Missing required frontmatter field "${key}".`, `Add ${key}: to the frontmatter block.`);
+    }
   }
 
-  const description = scalarValue(frontmatter, "description");
-  if (description.length < 20) errors.push(`${relative}: description should be at least 20 characters`);
-  if (description.length < 50) warnings.push(`${relative}: description is shorter than the recommended 50 characters`);
-  if (description.length > 160) warnings.push(`${relative}: description is longer than the recommended 160 characters`);
+  const description = frontmatterScalar(frontmatter, "description");
+  if (description.length < POST_DESCRIPTION_MIN_LENGTH) {
+    addError(
+      relative,
+      `Description must be at least ${POST_DESCRIPTION_MIN_LENGTH} characters.`,
+      "Write a standalone summary for readers and search results.",
+    );
+  }
+  if (description.length < POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH) {
+    addWarning(
+      relative,
+      `Description is shorter than the recommended ${POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH} characters.`,
+      `Aim for ${POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH}-${POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH} characters when practical.`,
+    );
+  }
+  if (description.length > POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH) {
+    addWarning(
+      relative,
+      `Description is longer than the recommended ${POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH} characters.`,
+      `Aim for ${POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH}-${POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH} characters when practical.`,
+    );
+  }
 
   const cleanBody = stripFencedCode(body);
-  if (/^#\s+/m.test(cleanBody)) errors.push(`${relative}: do not add an H1 in the body; the page renders title as H1`);
+  if (/^#\s+/m.test(cleanBody)) {
+    addError(
+      relative,
+      "The body contains an H1 even though the page already renders the title as H1.",
+      "Remove the body H1.",
+    );
+  }
   for (const image of cleanBody.matchAll(/!\[([^\]]*)\]\([^)]+\)/g)) {
-    if (!image[1].trim()) errors.push(`${relative}: Markdown image has empty alt text`);
+    if (!image[1].trim()) {
+      addError(relative, "A Markdown image has empty alt text.", "Describe the image between the square brackets.");
+    }
   }
 
   inspectHeadings(body, relative);
   const internalLinks = inspectInternalLinks(body, relative);
-  if (internalLinks === 0) warnings.push(`${relative}: no root-relative internal page links found`);
+  if (internalLinks === 0) {
+    addWarning(
+      relative,
+      "No root-relative internal page links were found.",
+      "Add a relevant internal page link when the article should connect to other site content.",
+    );
+  }
 
-  const date = new Date(scalarValue(frontmatter, "lastModified") || scalarValue(frontmatter, "date"));
+  const date = new Date(frontmatterScalar(frontmatter, "lastModified") || frontmatterScalar(frontmatter, "date"));
   if (Number.isFinite(date.valueOf())) {
     const ageDays = (Date.now() - date.valueOf()) / 86_400_000;
-    if (ageDays > staleAfterDays)
-      warnings.push(`${relative}: content has not been updated in more than ${staleAfterDays} days`);
+    if (ageDays > staleAfterDays) {
+      addWarning(
+        relative,
+        `Content has not been updated in more than ${staleAfterDays} days.`,
+        "Review the article and update lastModified after a meaningful revision.",
+      );
+    }
   }
 
-  const category = scalarValue(frontmatter, "category");
+  const category = frontmatterScalar(frontmatter, "category");
   if (category) {
     const slug = slugify(category);
-    if (!slug) errors.push(`${relative}: category "${category}" produces an empty slug`);
+    if (!slug) {
+      addError(
+        relative,
+        `Category "${category}" produces an empty slug.`,
+        "Use letters or numbers in the category name.",
+      );
+    }
     categoryEntries.push({ value: category, file: relative });
   }
-  for (const tag of listValues(frontmatter, "tags")) {
+  for (const tag of frontmatterList(frontmatter, "tags")) {
     const slug = slugify(tag);
-    if (!slug) errors.push(`${relative}: tag "${tag}" produces an empty slug`);
+    if (!slug) addError(relative, `Tag "${tag}" produces an empty slug.`, "Use letters or numbers in the tag name.");
     tagEntries.push({ value: tag, file: relative });
   }
 }
@@ -152,15 +204,32 @@ for (const [kind, entries] of [
   ["tag", tagEntries],
 ]) {
   for (const collision of taxonomySlugCollisions(entries)) {
-    errors.push(
-      `${collision.second.file}: ${kind} "${collision.second.value}" collides with "${collision.first.value}" at slug "${collision.slug}" (${collision.first.file})`,
+    addError(
+      collision.second.file,
+      `${kind} "${collision.second.value}" collides with "${collision.first.value}" at slug "${collision.slug}" (${collision.first.file}).`,
+      `Rename one ${kind} so the normalized URL slug is unique.`,
     );
   }
 }
 
-for (const warning of warnings) console.warn(`warning: ${warning}`);
-if (errors.length) {
-  console.error(errors.join("\n"));
-  process.exit(1);
+function printDiagnostic(level, diagnostic) {
+  const write = level === "ERROR" ? console.error : console.warn;
+  write(`${level} ${diagnostic.file}`);
+  write(`  ${diagnostic.message}`);
+  if (diagnostic.fix) write(`  Fix: ${diagnostic.fix}`);
 }
-console.log(`Content checks passed${warnings.length ? ` with ${warnings.length} warning(s)` : ""}.`);
+
+function plural(count, word) {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+
+for (const error of errors) printDiagnostic("ERROR", error);
+for (const warning of warnings) printDiagnostic("WARN", warning);
+
+console.log("\nContent check summary");
+console.log(`${plural(checkedPosts, "post")} checked`);
+console.log(plural(errors.length, "error"));
+console.log(plural(warnings.length, "warning"));
+
+if (errors.length) process.exit(1);
+console.log("✓ Content checks passed.");
