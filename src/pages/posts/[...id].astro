@@ -1,0 +1,77 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BackToTop from "../../components/BackToTop.astro";
+import Giscus from "../../components/Giscus.astro";
+import Share from "../../components/Share.astro";
+import Toc from "../../components/Toc.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { estimateReadingMinutes, slugify } from "../../lib/text.mjs";
+import kit from "../../../astro-publish-kit.config.mjs";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+interface Props { post: CollectionEntry<"posts"> }
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const minutes = estimateReadingMinutes(post.body ?? "");
+const author = post.data.author || kit.site.author.name;
+const canonical = new URL(`/posts/${post.id}`, kit.site.url).href;
+const articleLd = {
+  "@type": "Article",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  dateModified: (post.data.lastModified || post.data.date).toISOString(),
+  mainEntityOfPage: canonical,
+  author: { "@type": "Person", name: author },
+  publisher: { "@type": "Organization", name: kit.site.title },
+  ...(post.data.cover ? { image: new URL(post.data.cover.src, kit.site.url).href } : {})
+};
+const breadcrumbLd = {
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: kit.site.url },
+    { "@type": "ListItem", position: 2, name: "Posts", item: new URL("/posts", kit.site.url).href },
+    { "@type": "ListItem", position: 3, name: post.data.title, item: canonical }
+  ]
+};
+---
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  image={post.data.cover?.src}
+  noindex={post.data.noindex}
+  type="article"
+  jsonLd={[articleLd, breadcrumbLd]}
+>
+  <article class="shell article-shell" data-pagefind-body={!post.data.noindex ? true : undefined} data-pagefind-ignore={post.data.noindex ? true : undefined}>
+    <header class="article-header">
+      <div class="article-kicker">
+        <a href={`/categories/${slugify(post.data.category)}`}>{post.data.category}</a>
+        <span>·</span>
+        <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })}</time>
+        <span>·</span>
+        <span>{minutes} min read</span>
+      </div>
+      <h1 data-pagefind-meta="title">{post.data.title}</h1>
+      <p class="article-deck">{post.data.description}</p>
+      <div class="article-byline">By {author}</div>
+      {post.data.cover && <img class="article-cover" src={post.data.cover.src} alt={post.data.cover.alt} loading="eager" />}
+    </header>
+    <div class="article-layout">
+      <aside class="article-aside"><Toc headings={headings} /></aside>
+      <div class="prose"><Content /></div>
+    </div>
+    <footer class="article-footer">
+      <ul class="tag-row" aria-label="Tags">
+        {post.data.tags.map((tag) => <li><a href={`/tags/${slugify(tag)}`}>#{tag}</a></li>)}
+      </ul>
+      <Share title={post.data.title} />
+    </footer>
+    <Giscus />
+  </article>
+  <BackToTop />
+</BaseLayout>

@@ -1,0 +1,13 @@
+---
+import kit from "../../astro-publish-kit.config.mjs";
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="shell footer-inner">
+    <p>© {year} {kit.site.author.name}. Built with AstroPublishKit.</p>
+    <div class="footer-links">
+      {kit.social.map((item) => <a href={item.href} rel="me">{item.label}</a>)}
+      <a href="/rss.xml">RSS</a>
+    </div>
+  </div>
+</footer>

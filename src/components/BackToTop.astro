@@ -1,0 +1,8 @@
+<button class="back-to-top" type="button" data-back-to-top aria-label="Back to top">↑</button>
+<script>
+  const button = document.querySelector("[data-back-to-top]");
+  const sync = () => button?.toggleAttribute("data-visible", window.scrollY > 600);
+  window.addEventListener("scroll", sync, { passive: true });
+  sync();
+  button?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+</script>

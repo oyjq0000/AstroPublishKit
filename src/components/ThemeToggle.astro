@@ -1,0 +1,14 @@
+<button class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme-toggle>
+  <span aria-hidden="true">◐</span>
+  <span class="visually-hidden">Toggle theme</span>
+</button>
+
+<script>
+  const button = document.querySelector("[data-theme-toggle]");
+  button?.addEventListener("click", () => {
+    const current = document.documentElement.dataset.theme;
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("apk-theme", next);
+  });
+</script>

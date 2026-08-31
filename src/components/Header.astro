@@ -1,0 +1,22 @@
+---
+import kit from "../../astro-publish-kit.config.mjs";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const pathname = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label={`${kit.site.title} home`}>
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span>{kit.site.shortTitle}</span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      {kit.navigation.map((item) => (
+        <a href={item.href} aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? "page" : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>

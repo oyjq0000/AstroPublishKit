@@ -1,0 +1,41 @@
+<div class="search-box" data-search-root>
+  <label for="site-search">Search published content</label>
+  <input id="site-search" type="search" placeholder="Type a keyword…" autocomplete="off" data-search-input />
+  <p class="search-help" data-search-help>Search runs entirely in your browser with Pagefind.</p>
+  <div class="search-results" data-search-results aria-live="polite"></div>
+</div>
+<script is:inline type="module">
+  const root = document.querySelector("[data-search-root]");
+  const input = root?.querySelector("[data-search-input]");
+  const results = root?.querySelector("[data-search-results]");
+  const help = root?.querySelector("[data-search-help]");
+  let pagefind;
+
+  async function getPagefind() {
+    if (pagefind) return pagefind;
+    try {
+      pagefind = await import("/pagefind/pagefind.js");
+      await pagefind.init();
+      return pagefind;
+    } catch {
+      if (help) help.textContent = "Search index is available after running a production build.";
+      return null;
+    }
+  }
+
+  input?.addEventListener("input", async (event) => {
+    const query = event.target.value.trim();
+    if (!results) return;
+    if (query.length < 2) {
+      results.innerHTML = "";
+      return;
+    }
+    const api = await getPagefind();
+    if (!api) return;
+    const response = await api.search(query);
+    const items = await Promise.all(response.results.slice(0, 10).map((result) => result.data()));
+    results.innerHTML = items.length
+      ? `<ul>${items.map((item) => `<li><a href="${item.url}"><strong>${item.meta?.title || item.url}</strong><span>${item.excerpt || ""}</span></a></li>`).join("")}</ul>`
+      : "<p>No results.</p>";
+  });
+</script>

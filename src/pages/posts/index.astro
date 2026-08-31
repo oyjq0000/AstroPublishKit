@@ -1,0 +1,16 @@
+---
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublishedPosts } from "../../lib/content";
+const posts = await getPublishedPosts();
+---
+<BaseLayout title="Posts" description="All published posts.">
+  <section class="shell page-header">
+    <p class="eyebrow">Library</p>
+    <h1>Posts</h1>
+    <p>{posts.length} published {posts.length === 1 ? "post" : "posts"}.</p>
+  </section>
+  <section class="shell post-grid section-block">
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

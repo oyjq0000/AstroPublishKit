@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublishedPosts, getTagSummaries } from "../../lib/content";
+const posts = await getPublishedPosts();
+const tags = getTagSummaries(posts);
+---
+<BaseLayout title="Tags" description="Browse posts by tag.">
+  <section class="shell page-header"><p class="eyebrow">Topics</p><h1>Tags</h1><p>Browse the library by keyword.</p></section>
+  <section class="shell chip-cloud section-block">
+    {tags.map((tag) => <a href={`/tags/${tag.slug}`}>#{tag.name} <span>{tag.count}</span></a>)}
+  </section>
+</BaseLayout>

@@ -1,0 +1,21 @@
+---
+import type { Post } from "../lib/content";
+import { postUrl } from "../lib/content";
+import { slugify } from "../lib/text.mjs";
+
+interface Props { post: Post }
+const { post } = Astro.props;
+---
+<article class="post-card">
+  <div class="post-card-meta">
+    <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString("en", { year: "numeric", month: "short", day: "numeric" })}</time>
+    <a href={`/categories/${slugify(post.data.category)}`}>{post.data.category}</a>
+  </div>
+  <h2><a href={postUrl(post)}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  {post.data.tags.length > 0 && (
+    <ul class="tag-row" aria-label="Tags">
+      {post.data.tags.map((tag) => <li><a href={`/tags/${slugify(tag)}`}>#{tag}</a></li>)}
+    </ul>
+  )}
+</article>
