@@ -4,6 +4,7 @@ import {
   filterPostsByCategory,
   filterPostsByTag,
   isDiscoverablePost,
+  isPreviewablePost,
   isPublishedPost,
   sortPostsByDate,
 } from "../src/lib/posts.mjs";
@@ -25,6 +26,13 @@ test("draft and noindex semantics stay distinct", () => {
   assert.equal(isPublishedPost(post("draft", "2026-01-01", { draft: true })), false);
   assert.equal(isPublishedPost(post("noindex", "2026-01-01", { noindex: true })), true);
   assert.equal(isDiscoverablePost(post("noindex", "2026-01-01", { noindex: true })), false);
+});
+
+test("drafts are previewable only when draft preview is explicitly enabled", () => {
+  const draft = post("draft", "2026-01-01", { draft: true });
+  assert.equal(isPreviewablePost(draft), false);
+  assert.equal(isPreviewablePost(draft, true), true);
+  assert.equal(isPreviewablePost(post("published", "2026-01-01")), true);
 });
 
 test("posts sort newest first without mutating the input", () => {
