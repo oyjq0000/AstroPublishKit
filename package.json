@@ -6,7 +6,7 @@
   "description": "A clean, static-first Astro publishing starter with SEO, search, quality gates, and Cloudflare deployment.",
   "license": "MIT",
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.22.3"
   },
   "scripts": {
     "dev": "astro dev",

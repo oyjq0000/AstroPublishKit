@@ -36,7 +36,7 @@ AstroPublishKit 优先解决的是 **发布基础设施**，而不只是提供�
 
 ## 5 分钟完成配置
 
-环境要求：Node.js 22.13+。
+环境要求：Node.js 22.22.3+。
 
 1. 在 GitHub 点击 **Use this template**（推荐），或普通 clone。
 2. 使用 `npm ci` 安装 lockfile 锁定的依赖。
@@ -139,19 +139,19 @@ npm run build && npm run preview
 
 `npm run check` 是本地和 CI 共用的唯一 Release Gate。
 
-| 检查 | 作用 |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript 正确性 |
-| `npm run lint` | JS、MJS、TS、Astro 的 ESLint 检查 |
-| `npm run format:check` | 使用 Prettier 校验格式但不修改文件 |
-| `npm run test` | URL、内容、taxonomy、文本与 SEO 回归测试 |
-| `npm run check:config` | 通用站点配置与可选集成验证 |
-| `npm run check:content` | 内容约定、taxonomy 安全与非阻塞警告 |
-| `npm run build` | 最终静态输出 + Pagefind 索引 |
-| `npm run check:links` | 离线检查生成后的站内页面链接 |
-| `npm run check:sitemap` | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
-| `npm run check:safety` | 常见 secret 模式与误提交的环境文件 |
-| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
+| 检查                     | 作用                                                |
+| ------------------------ | --------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript 正确性                           |
+| `npm run lint`           | JS、MJS、TS、Astro 的 ESLint 检查                   |
+| `npm run format:check`   | 使用 Prettier 校验格式但不修改文件                  |
+| `npm run test`           | URL、内容、taxonomy、文本与 SEO 回归测试            |
+| `npm run check:config`   | 通用站点配置与可选集成验证                          |
+| `npm run check:content`  | 内容约定、taxonomy 安全与非阻塞警告                 |
+| `npm run build`          | 最终静态输出 + Pagefind 索引                        |
+| `npm run check:links`    | 离线检查生成后的站内页面链接                        |
+| `npm run check:sitemap`  | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
+| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件                  |
+| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留        |
 
 CI 只需要执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非阻塞 Warning 与生产 smoke check 的详细说明见 **[质量检查文档](docs/quality-checks.md)**。
 
@@ -159,13 +159,13 @@ CI 只需要执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非�
 
 绝大多数用户建议直接把 GitHub 仓库连接到 Cloudflare Pages：
 
-| 配置项 | 值 |
-| --- | --- |
-| 生产分支 | `main` |
-| 构建命令 | `npm run build:production` |
-| 构建输出目录 | `dist` |
-| `SITE_URL` | 你的生产 HTTPS Origin |
-| `NODE_VERSION` | `22.13.0` 或兼容的 Node 22 |
+| 配置项         | 值                         |
+| -------------- | -------------------------- |
+| 生产分支       | `main`                     |
+| 构建命令       | `npm run build:production` |
+| 构建输出目录   | `dist`                     |
+| `SITE_URL`     | 你的生产 HTTPS Origin      |
+| `NODE_VERSION` | `22.22.3` 或兼容的 Node 22 |
 
 仓库输出普通静态文件，因此不需要 Cloudflare Adapter。
 

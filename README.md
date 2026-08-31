@@ -36,7 +36,7 @@ The included visual layer is intentionally minimal and replaceable. The default 
 
 ## 5-minute setup
 
-Requirements: Node.js 22.13+.
+Requirements: Node.js 22.22.3+.
 
 1. Click **Use this template** on GitHub (recommended), or clone the repository.
 2. Install the locked dependencies with `npm ci`.
@@ -139,19 +139,19 @@ npm run build && npm run preview
 
 `npm run check` is the single local and CI release gate.
 
-| Check | Purpose |
-| --- | --- |
-| `npm run typecheck` | Astro / TypeScript correctness |
-| `npm run lint` | ESLint for JS, MJS, TS and Astro |
-| `npm run format:check` | Prettier verification without modifying files |
-| `npm run test` | URL, content, taxonomy, text and SEO regression tests |
-| `npm run check:config` | generic site/config/integration validation |
-| `npm run check:content` | content conventions, taxonomy safety and editorial warnings |
-| `npm run build` | final static output + Pagefind index |
-| `npm run check:links` | offline validation of generated internal page links |
-| `npm run check:sitemap` | sitemap origin, pages, exclusions, duplicates and `lastmod` |
-| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
-| `npm run check:template` | fake-user build and generated-site identity residue scan |
+| Check                    | Purpose                                                           |
+| ------------------------ | ----------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript correctness                                    |
+| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                  |
+| `npm run format:check`   | Prettier verification without modifying files                     |
+| `npm run test`           | URL, content, taxonomy, text and SEO regression tests             |
+| `npm run check:config`   | generic site/config/integration validation                        |
+| `npm run check:content`  | content conventions, taxonomy safety and editorial warnings       |
+| `npm run build`          | final static output + Pagefind index                              |
+| `npm run check:links`    | offline validation of generated internal page links               |
+| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
+| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
+| `npm run check:template` | fake-user build and generated-site identity residue scan          |
 
 CI only needs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
 
@@ -159,13 +159,13 @@ CI only needs `npm ci` followed by `npm run check`. See **[Quality checks](docs/
 
 For most users, connect the GitHub repository to Cloudflare Pages:
 
-| Setting | Value |
-| --- | --- |
-| Production branch | `main` |
-| Build command | `npm run build:production` |
-| Build output directory | `dist` |
-| `SITE_URL` | your production HTTPS origin |
-| `NODE_VERSION` | `22.13.0` or compatible Node 22 |
+| Setting                | Value                           |
+| ---------------------- | ------------------------------- |
+| Production branch      | `main`                          |
+| Build command          | `npm run build:production`      |
+| Build output directory | `dist`                          |
+| `SITE_URL`             | your production HTTPS origin    |
+| `NODE_VERSION`         | `22.22.3` or compatible Node 22 |
 
 The repository produces plain static files, so no Cloudflare adapter is required.
 
