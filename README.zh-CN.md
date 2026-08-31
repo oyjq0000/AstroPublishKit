@@ -69,8 +69,8 @@ npm run dev
 - Sitemap，支持 `lastModified` 和 `noindex` 过滤
 - RSS、robots.txt 和 llms.txt
 - 可选 Giscus、Cloudflare Web Analytics 和 Umami，默认关闭
-- 内容检查、安全检查、单元测试与模板回归检查
-- GitHub Actions CI
+- ESLint、Prettier、配置/内容/链接/Sitemap/安全检查、单元测试与模板回归检查
+- 只使用一个 Release Gate 的 GitHub Actions CI
 - Cloudflare Pages，以及可选的 Workers Static Assets 部署
 
 ## 界面预览
@@ -137,28 +137,34 @@ npm run build && npm run preview
 
 ## 质量门禁
 
-| 检查                     | 作用                                         |
-| ------------------------ | -------------------------------------------- |
-| `npm run typecheck`      | Astro / TypeScript 正确性                    |
-| `npm run test`           | 工具函数回归测试                             |
-| `npm run check:content`  | Frontmatter、内容约定与 taxonomy slug 冲突   |
-| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件           |
-| `npm run build`          | 最终静态输出 + Pagefind 索引                 |
-| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
-| `npm run check`          | typecheck + tests + content + safety + build |
+`npm run check` 是本地和 CI 共用的唯一 Release Gate。
 
-CI 使用 `npm ci` 安装依赖，先运行 `npm run check`，再运行模板回归检查。
+| 检查 | 作用 |
+| --- | --- |
+| `npm run typecheck` | Astro / TypeScript 正确性 |
+| `npm run lint` | JS、MJS、TS、Astro 的 ESLint 检查 |
+| `npm run format:check` | 使用 Prettier 校验格式但不修改文件 |
+| `npm run test` | URL、内容、taxonomy、文本与 SEO 回归测试 |
+| `npm run check:config` | 通用站点配置与可选集成验证 |
+| `npm run check:content` | 内容约定、taxonomy 安全与非阻塞警告 |
+| `npm run build` | 最终静态输出 + Pagefind 索引 |
+| `npm run check:links` | 离线检查生成后的站内页面链接 |
+| `npm run check:sitemap` | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
+| `npm run check:safety` | 常见 secret 模式与误提交的环境文件 |
+| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
+
+CI 只需要执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非阻塞 Warning 与生产 smoke check 的详细说明见 **[质量检查文档](docs/quality-checks.md)**。
 
 ## Cloudflare Pages — 推荐
 
 绝大多数用户建议直接把 GitHub 仓库连接到 Cloudflare Pages：
 
-| 配置项         | 值                         |
-| -------------- | -------------------------- |
-| 生产分支       | `main`                     |
-| 构建命令       | `npm run build:production` |
-| 构建输出目录   | `dist`                     |
-| `SITE_URL`     | 你的生产 HTTPS Origin      |
+| 配置项 | 值 |
+| --- | --- |
+| 生产分支 | `main` |
+| 构建命令 | `npm run build:production` |
+| 构建输出目录 | `dist` |
+| `SITE_URL` | 你的生产 HTTPS Origin |
 | `NODE_VERSION` | `22.13.0` 或兼容的 Node 22 |
 
 仓库输出普通静态文件，因此不需要 Cloudflare Adapter。
@@ -185,7 +191,6 @@ npm run deploy:cf
 - [ ] 保留、修改或删除 Demo 文章
 - [ ] 设置 `SITE_URL`
 - [ ] 运行 `npm run check`
-- [ ] 运行 `npm run check:template`
 - [ ] 运行 `npm run build:production`
 
 ## Template 清理
@@ -217,12 +222,14 @@ src/pages/                      静态路由与 Feed
 src/styles/global.css           可替换的视觉层
 astro-publish-kit.config.mjs    主要站点配置
 scripts/                        写作和质量检查脚本
-docs/                           内容、配置和部署文档
+docs/                           内容、配置、质量检查和部署文档
 ```
 
 ## 当前范围
 
 v0.1.x 明确不包含 i18n 路由、Mermaid、LaTeX、Dynamic OG、Gallery、多作者系统、CMS / Admin / Database / Auth、AI 写作、广告系统或重型 Theme 配置系统。
+
+当前实现状态以及 v0.2.0 / v0.3.0+ 的边界见 **[Feature Matrix](feature-matrix.md)**。
 
 ## 来源与署名
 
