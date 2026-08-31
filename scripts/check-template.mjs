@@ -47,11 +47,19 @@ try {
   const dist = path.join(temp, "dist");
   const textFiles = walk(dist).filter((file) => /\.(?:html?|xml|txt|json|svg|css)$/i.test(file));
   const forbidden = ["oyjq0000", "astropublishkit.pages.dev", "https://example.com"];
+  const demoBrandPages = new Set([
+    "posts/getting-started/index.html",
+    "posts/publishing-workflow/index.html"
+  ]);
   const errors = [];
   for (const file of textFiles) {
+    const relative = path.relative(dist, file).split(path.sep).join("/");
     const content = fs.readFileSync(file, "utf8");
     for (const value of forbidden) {
-      if (content.includes(value)) errors.push(`${path.relative(dist, file)} contains ${value}`);
+      if (content.includes(value)) errors.push(`${relative} contains ${value}`);
+    }
+    if (relative.endsWith(".html") && content.includes("AstroPublishKit") && !demoBrandPages.has(relative)) {
+      errors.push(`${relative} contains AstroPublishKit outside an explicitly allowed demo article`);
     }
   }
   if (errors.length) {
