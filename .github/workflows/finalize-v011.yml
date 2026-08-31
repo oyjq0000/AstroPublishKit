@@ -1,0 +1,59 @@
+name: Finalize v0.1.1 hardening
+
+on:
+  push:
+    branches: [v0.1.1-quality-hardening-followup]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: v0.1.1-quality-hardening-followup
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.22.3
+          cache: npm
+      - name: Align Node requirement
+        run: |
+          printf '22.22.3\n' > .node-version
+          npm pkg set engines.node='>=22.22.3'
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ['README.md', 'README.zh-CN.md']:
+              p = Path(name)
+              s = p.read_text()
+              s = s.replace('Node.js 22.13+', 'Node.js 22.22.3+')
+              s = s.replace('Node.js 22.13+。', 'Node.js 22.22.3+。')
+              s = s.replace('`22.13.0` or compatible Node 22', '`22.22.3` or compatible Node 22')
+              s = s.replace('`22.13.0` 或兼容的 Node 22', '`22.22.3` 或兼容的 Node 22')
+              p.write_text(s)
+          PY
+      - name: Refresh lockfile
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Install dependencies
+        run: npm ci
+      - name: Apply formatting
+        run: npm run format
+      - name: Full release gate
+        run: npm run check
+      - name: Production smoke test
+        run: SITE_URL=https://example.org npm run build:production
+      - name: Commit validated fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .node-version package.json package-lock.json README.md README.zh-CN.md feature-matrix.md src/pages/404.astro
+          if git diff --cached --quiet; then
+            echo "No fixes to commit"
+          else
+            git commit -m "fix: finish v0.1.1 release gate"
+            git push origin HEAD:v0.1.1-quality-hardening-followup
+          fi
