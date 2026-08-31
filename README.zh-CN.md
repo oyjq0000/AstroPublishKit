@@ -10,7 +10,7 @@
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-F38020?logo=cloudflare&logoColor=white)](https://pages.cloudflare.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-一个干净、静态优先的 Astro 发布模板，适合博客、技术笔记和内容型网站。
+一个干净、静态优先的 Astro 发布 Starter，适合博客、技术笔记和内容型网站。
 
 **在线演示：** https://astropublishkit.pages.dev/
 
@@ -20,83 +20,66 @@
   </a>
 </p>
 
-AstroPublishKit 更偏向一个 **发布套件（publishing kit）**，而不只是一个主题：内容模型、搜索、SEO / 内容发现、质量检查和部署默认配置都已经准备好，同时视觉层保持轻量，方便替换成你自己的设计。
+AstroPublishKit 优先解决的是 **发布基础设施**，而不只是提供一个 Theme：
 
-## 功能
+- ✓ 类型化内容模型
+- ✓ 静态搜索
+- ✓ SEO 与内容发现输出
+- ✓ 质量检查
+- ✓ 部署默认配置
 
-- Astro 7 + Markdown / MDX + 类型安全的 Content Collections
-- 响应式界面，支持浅色 / 深色模式
-- 文章、分类、标签、归档和阅读时长
-- Pagefind 静态搜索，无需独立搜索服务
-- 目录、分享、返回顶部、Callout、Accordion、视频组件
-- Canonical、Open Graph、Twitter Cards 和 JSON-LD
-- Sitemap，支持 `lastModified` 和 `noindex` 过滤
-- RSS、robots.txt 和 llms.txt
-- 可选 Giscus、Cloudflare Web Analytics 和 Umami，默认全部关闭
-- `new-post`、内容检查、安全检查和单元测试
-- GitHub Actions CI
-- 支持 Cloudflare Pages 和 Workers Static Assets 部署
+自带视觉层刻意保持轻量，方便替换。默认构建结果就是 `dist/` 中的普通静态文件；不需要数据库、Node 服务、SSR Runtime 或独立搜索后端。
 
-默认不需要数据库、后台管理系统、SSR Runtime、生产统计账号，也不会携带任何私人站点内容。
-
-## 快速开始
+## 5 分钟完成配置
 
 环境要求：Node.js 22.13+。
 
-可以直接点击 GitHub 的 **Use this template** 创建新仓库，也可以普通 clone：
+1. 在 GitHub 点击 **Use this template**（推荐），或普通 clone。
+2. 使用 `npm ci` 安装 lockfile 锁定的依赖。
+3. 修改 `astro-publish-kit.config.mjs`，替换 Demo 身份信息。
+4. 把 `SITE_URL` 设置为你的生产 HTTPS Origin。
+5. 用 `npm run new-post -- my-first-post` 创建第一篇文章。
+6. 运行 `npm run check`。
+7. 将 `dist/` 部署到 Cloudflare Pages。
 
 ```bash
 git clone https://github.com/oyjq0000/AstroPublishKit.git
 cd AstroPublishKit
-npm install
+npm ci
 npm run dev
 ```
 
-然后修改 `astro-publish-kit.config.mjs`，替换 Demo 中的站点信息。
+> **生产环境必填：** 部署前必须设置 `SITE_URL`。缺失或仍为 `https://example.com` 时，`npm run build:production` 会主动失败。
 
-创建一篇草稿：
+`SITE_URL` 决定 Canonical、Sitemap、RSS、robots.txt、JSON-LD、llms.txt、Open Graph 与分享 URL 使用的生产 Origin。
 
-```bash
-npm run new-post -- my-first-post
-```
+## 功能
 
-运行完整发布检查：
-
-```bash
-npm run check
-```
-
-最终静态文件输出到 `dist/`，构建过程中会同时生成 Pagefind 搜索索引。
+- Astro 7 + Markdown / MDX + 类型化 Content Collections
+- 响应式浅色 / 深色界面与移动端导航
+- 文章、分类、标签、归档、阅读时长和文章元数据
+- Pagefind 静态搜索
+- TOC、分享、返回顶部
+- Callout、Accordion、YouTube MDX 组件
+- Canonical、Open Graph、Twitter Cards 和 JSON-LD
+- Sitemap，支持 `lastModified` 和 `noindex` 过滤
+- RSS、robots.txt 和 llms.txt
+- 可选 Giscus、Cloudflare Web Analytics 和 Umami，默认关闭
+- 内容检查、安全检查、单元测试与模板回归检查
+- GitHub Actions CI
+- Cloudflare Pages，以及可选的 Workers Static Assets 部署
 
 ## 配置
 
-主要配置入口是：
+主要站点配置文件是 `astro-publish-kit.config.mjs`。它负责站点名称、作者、仓库 / 社交链接、导航、品牌标记与静态资源、版权和首页文案；`SITE_URL` 单独提供生产 Origin。
 
-```text
-astro-publish-kit.config.mjs
-```
+完整字段和 Required / Recommended / Optional 划分见 **[配置参考](docs/configuration.md)**。
 
-可以在这里设置站点名称、Canonical URL、作者、导航、社交链接、语言区域和首页文案。
+可选集成的环境变量在 `.env.example` 中说明；变量为空时不会加载相应功能。
 
-正式部署时，请显式设置生产站点地址：
+## 内容模型
 
-```bash
-SITE_URL=https://your-domain.example
-```
-
-源码里故意保留 `https://example.com` 作为兜底值，避免别人复制模板后，在未配置自己的域名时错误地把 AstroPublishKit Demo 地址当成 Canonical。
-
-可选第三方集成的环境变量请参考 `.env.example`。对应变量为空时，相关功能不会加载。
-
-## 内容
-
-文章放在：
-
-```text
-src/content/posts/
-```
-
-最小 Frontmatter 示例：
+文章放在 `src/content/posts/`，支持 `.md` 和 `.mdx`。
 
 ```yaml
 ---
@@ -110,47 +93,96 @@ noindex: false
 ---
 ```
 
-完整字段和 MDX 组件说明请查看 `docs/content.md`。
+几个容易误解的语义：
 
-## Cloudflare Pages
+- `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
+- `author` 可选。不填时继承站点作者；填写时仅覆盖当前文章作者。
+- v0.1.x 中 `lang` 只是文章元数据，**不会**开启多语言路由、UI 翻译或 hreflang。
+- `draft: true` 表示页面完全不生成。
+- `noindex: true` 表示页面仍会生成并可直接访问，但从 Sitemap、Pagefind 和 llms.txt 的发现链路中排除，同时输出 robots `noindex`。
 
-公开 Demo `astropublishkit.pages.dev` 从 `main` 分支自动部署，配置如下：
+封面、MDX 组件和完整 Frontmatter 见 **[内容写作说明](docs/content.md)**。
+
+### Pagefind 在开发环境中的行为
+
+Pagefind 索引由 `npm run build` 生成。`npm run dev` 时 Search 页面本身存在，但要验证完整搜索索引，建议使用：
+
+```bash
+npm run build && npm run preview
+```
+
+## 质量门禁
+
+| 检查 | 作用 |
+| --- | --- |
+| `npm run typecheck` | Astro / TypeScript 正确性 |
+| `npm run test` | 工具函数回归测试 |
+| `npm run check:content` | Frontmatter、内容约定与 taxonomy slug 冲突 |
+| `npm run check:safety` | 常见 secret 模式与误提交的环境文件 |
+| `npm run build` | 最终静态输出 + Pagefind 索引 |
+| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留 |
+| `npm run check` | typecheck + tests + content + safety + build |
+
+CI 使用 `npm ci` 安装依赖，先运行 `npm run check`，再运行模板回归检查。
+
+## Cloudflare Pages — 推荐
+
+绝大多数用户建议直接把 GitHub 仓库连接到 Cloudflare Pages：
 
 | 配置项 | 值 |
 | --- | --- |
 | 生产分支 | `main` |
-| 构建命令 | `npm run build` |
+| 构建命令 | `npm run build:production` |
 | 构建输出目录 | `dist` |
-| `SITE_URL` | Demo 使用 `https://astropublishkit.pages.dev`；你的项目应填写自己的正式域名 |
-| `NODE_VERSION` | `22.13.0` 或更新的 Node 22 |
+| `SITE_URL` | 你的生产 HTTPS Origin |
+| `NODE_VERSION` | `22.13.0` 或兼容的 Node 22 |
 
-启用 Git 集成后，每次向生产分支 push 都会触发新的 Pages 部署。
+仓库输出普通静态文件，因此不需要 Cloudflare Adapter。
 
-## Cloudflare Workers Static Assets
+## Workers Static Assets — 进阶
 
-仓库同时提供 `wrangler.jsonc`，其中 `assets.directory` 指向 `./dist`。修改项目名并配置 `SITE_URL` 后运行：
+如果你习惯 Wrangler / CLI 部署，或者以后准备叠加 Worker 能力，可以使用这条路径。修改 Worker 项目名、配置 `SITE_URL` 后执行：
 
 ```bash
 npm run deploy:cf
 ```
 
-默认项目完全预渲染，因此不需要 Worker 入口文件，也不需要 `@astrojs/cloudflare` Adapter。
+`wrangler.jsonc` 直接服务 `./dist`，启用 trailing-slash HTML 处理，并让未知路径返回项目自定义 `404.html` 与 HTTP 404。
 
-更多部署说明见 `docs/deployment.md`。
+更多说明见 **[部署文档](docs/deployment.md)**。
 
-## 项目检查
+## 部署前检查
 
-```bash
-npm run typecheck
-npm run test
-npm run check:content
-npm run check:safety
-npm run build
-```
+- [ ] 替换站点标题、描述和作者
+- [ ] 替换仓库与社交链接
+- [ ] 替换品牌标记和 favicon
+- [ ] 替换默认 1200×630 OG 图片
+- [ ] 如有需要，替换通用 About 内容
+- [ ] 保留、修改或删除 Demo 文章
+- [ ] 设置 `SITE_URL`
+- [ ] 运行 `npm run check`
+- [ ] 运行 `npm run check:template`
+- [ ] 运行 `npm run build:production`
 
-`npm run check` 会依次执行整套发布检查。CI 也使用同一套门禁。
+## Template 清理
 
-`check:safety` 会扫描公开实现中的生产标识和常见敏感信息模式。审计与来源记录文档不参与应用运行。
+仓库包含演示内容，用来展示 Starter 的能力。以下内容都可以安全替换或删除：
+
+- `src/content/posts/` 中的 Demo 文章
+- 主配置中的首页文案
+- 通用 About 页面内容
+- `public/favicon.svg`
+- `public/og.png`
+
+请保留 `LICENSE` 与 `THIRD_PARTY_NOTICES.md`。除非你明确要改变 Starter 的契约，否则建议保留配置和 Content Schema 的结构。
+
+## 可选集成
+
+- **Giscus：** 只有全部必要 Giscus 环境变量存在时，才显示在文章正文下方。
+- **Cloudflare Web Analytics：** 配置 `PUBLIC_CF_BEACON_TOKEN` 后全站加载。
+- **Umami：** Script URL 与 Website ID 同时存在时才全站加载。
+
+仓库不会把生产统计账号标识作为默认配置提交进来。
 
 ## 项目结构
 
@@ -161,32 +193,17 @@ src/pages/                      静态路由与 Feed
 src/styles/global.css           可替换的视觉层
 astro-publish-kit.config.mjs    主要站点配置
 scripts/                        写作和质量检查脚本
-docs/                           内容、定制和部署文档
+docs/                           内容、配置和部署文档
 ```
 
 ## 当前范围
 
-`feature-matrix.md` 是当前版本的功能边界。初始版本明确不包含：
+v0.1.x 明确不包含 i18n 路由、Mermaid、LaTeX、Dynamic OG、Gallery、多作者系统、CMS / Admin / Database / Auth、AI 写作、广告系统或重型 Theme 配置系统。
 
-- 数据库和 CMS 后端
-- 用户认证
-- 任何个人站点迁移工具
-- 内置广告账号
-- 批量 AI 文章生成
-- 游戏 / Wiki 专用组件
-- 对 AstroPaper、Fuwari、Retypeset 或 AnvilWiki 视觉设计的复制
+## 来源与署名
 
-## 来源与审计
-
-这个仓库拥有独立的 Git 历史。项目是在审计现有 Astro 博客并研究多个公开项目后重新构建的，没有复制私人文章、站点历史或私有资产。
-
-详细记录：
-
-- `source-audit.md`
-- `reference-projects.md`
-- `feature-matrix.md`
-- `THIRD_PARTY_NOTICES.md`
+仓库拥有独立 Git 历史，并只保留简短、长期有效的来源记录。见 `PROVENANCE.md` 与 `THIRD_PARTY_NOTICES.md`。
 
 ## 许可证
 
-MIT。第三方来源和署名请查看 `LICENSE` 与 `THIRD_PARTY_NOTICES.md`。
+MIT。见 `LICENSE` 与 `THIRD_PARTY_NOTICES.md`。

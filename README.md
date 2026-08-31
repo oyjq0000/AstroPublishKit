@@ -20,83 +20,66 @@ A clean, static-first Astro publishing starter for blogs, technical notes, and c
   </a>
 </p>
 
-AstroPublishKit is deliberately more **publishing kit** than **theme**: typed content, search, SEO/discovery, quality gates, and deployment defaults are built in, while the visual layer stays small and replaceable.
+AstroPublishKit focuses on **publishing infrastructure first**:
 
-## What you get
+- ✓ typed content model
+- ✓ static search
+- ✓ SEO and discovery outputs
+- ✓ quality checks
+- ✓ deployment defaults
 
-- Astro 7 + Markdown/MDX + typed Content Collections
-- neutral responsive design with light/dark mode
-- posts, categories, tags, archive and reading-time metadata
-- Pagefind static search
-- table of contents, sharing, back-to-top, callout/accordion/video primitives
-- canonical URLs, Open Graph, Twitter cards and JSON-LD
-- sitemap with article `lastModified` and `noindex` filtering
-- RSS, robots.txt and llms.txt
-- optional Giscus, Cloudflare Web Analytics and Umami, all off by default
-- `new-post`, content checks, safety checks and unit tests
-- GitHub Actions CI
-- Cloudflare Pages and Workers Static Assets deployment paths
+The included visual layer is intentionally minimal and replaceable. The default site builds to plain static files in `dist/`; no database, Node server, SSR runtime, or search backend is required.
 
-No database, admin panel, SSR runtime, production analytics account, or private site content is required.
-
-## Quick start
+## 5-minute setup
 
 Requirements: Node.js 22.13+.
 
-Use **Use this template** on GitHub, or clone it normally:
+1. Click **Use this template** on GitHub (recommended), or clone the repository.
+2. Install the locked dependencies with `npm ci`.
+3. Edit `astro-publish-kit.config.mjs` and replace the demo identity.
+4. Set `SITE_URL` to your production HTTPS origin.
+5. Create your first post with `npm run new-post -- my-first-post`.
+6. Run `npm run check`.
+7. Deploy `dist/` to Cloudflare Pages.
 
 ```bash
 git clone https://github.com/oyjq0000/AstroPublishKit.git
 cd AstroPublishKit
-npm install
+npm ci
 npm run dev
 ```
 
-Then edit `astro-publish-kit.config.mjs` and replace the demo identity.
+> **Production requirement:** `SITE_URL` must be set before deploying. `npm run build:production` intentionally fails when it is missing or still points to `https://example.com`.
 
-Create a draft:
+`SITE_URL` controls the production origin used by canonical URLs, sitemap, RSS, robots.txt, JSON-LD, llms.txt, Open Graph URLs, and sharing URLs.
 
-```bash
-npm run new-post -- my-first-post
-```
+## What you get
 
-Run the full release gate:
-
-```bash
-npm run check
-```
-
-Build output is written to `dist/`, and Pagefind indexes that output during the build command.
+- Astro 7 + Markdown/MDX + typed Content Collections
+- responsive light/dark interface with mobile navigation
+- posts, categories, tags, archive, reading time and article metadata
+- Pagefind static search
+- table of contents, sharing and back-to-top
+- Callout, Accordion and YouTube MDX primitives
+- canonical URLs, Open Graph, Twitter Cards and JSON-LD
+- sitemap with article `lastModified` and `noindex` filtering
+- RSS, robots.txt and llms.txt
+- optional Giscus, Cloudflare Web Analytics and Umami, all off by default
+- content checks, safety checks, unit tests and template regression checks
+- GitHub Actions CI
+- Cloudflare Pages plus optional Workers Static Assets deployment
 
 ## Configuration
 
-The main configuration surface is:
+The primary site configuration is `astro-publish-kit.config.mjs`. It controls the site title, author, repository/social URLs, navigation, brand mark/assets, copyright and homepage copy. `SITE_URL` supplies the production origin.
 
-```text
-astro-publish-kit.config.mjs
-```
+See **[Configuration reference](docs/configuration.md)** for every supported setting and the required/recommended/optional split.
 
-Use it for site identity, canonical URL, author, navigation, social links, locale, and homepage copy.
+Optional integrations use environment variables documented in `.env.example`. Empty values keep integrations disabled.
 
-For every real deployment, set the canonical production origin explicitly:
+## Content model
 
-```bash
-SITE_URL=https://your-domain.example
-```
-
-The source fallback remains `https://example.com` intentionally so a copied starter cannot silently claim the AstroPublishKit demo URL as its canonical origin.
-
-Optional integrations are documented in `.env.example`. Empty variables keep integrations disabled.
-
-## Content
-
-Posts live in:
-
-```text
-src/content/posts/
-```
-
-Minimal frontmatter:
+Posts live in `src/content/posts/` and can use `.md` or `.mdx`.
 
 ```yaml
 ---
@@ -110,47 +93,96 @@ noindex: false
 ---
 ```
 
-See `docs/content.md` for the full model and MDX components.
+A few semantics are worth making explicit:
 
-## Cloudflare Pages
+- `category` is one broad section; `tags` are zero or more specific topics.
+- `author` is optional. When omitted, the site-level author is used; when set, it overrides the author for that post.
+- `lang` is article metadata only in v0.1.x. It does **not** enable multilingual routing, translated UI, or hreflang.
+- `draft: true` means the page is not generated.
+- `noindex: true` means the page is generated and directly accessible, but is excluded from sitemap discovery, Pagefind and llms.txt and receives a robots `noindex` directive.
 
-The public demo at `astropublishkit.pages.dev` is deployed from `main` with these settings:
+See **[Content authoring](docs/content.md)** for covers, MDX components and the full frontmatter model.
+
+### Pagefind in development
+
+Pagefind is generated by `npm run build`. The search page exists during `npm run dev`, but the complete static index should be tested with:
+
+```bash
+npm run build && npm run preview
+```
+
+## Quality gates
+
+| Check | Purpose |
+| --- | --- |
+| `npm run typecheck` | Astro / TypeScript correctness |
+| `npm run test` | utility regression tests |
+| `npm run check:content` | frontmatter, content conventions and taxonomy slug collisions |
+| `npm run check:safety` | common secret patterns and accidentally tracked environment files |
+| `npm run build` | final static output + Pagefind index |
+| `npm run check:template` | fake-user build and generated-site identity residue scan |
+| `npm run check` | typecheck + tests + content + safety + build |
+
+CI installs with `npm ci`, runs `npm run check`, then runs the template regression check.
+
+## Cloudflare Pages — recommended
+
+For most users, connect the GitHub repository to Cloudflare Pages:
 
 | Setting | Value |
 | --- | --- |
 | Production branch | `main` |
-| Build command | `npm run build` |
+| Build command | `npm run build:production` |
 | Build output directory | `dist` |
-| `SITE_URL` | `https://astropublishkit.pages.dev` for the demo; use your own production origin |
-| `NODE_VERSION` | `22.13.0` or newer Node 22 |
+| `SITE_URL` | your production HTTPS origin |
+| `NODE_VERSION` | `22.13.0` or compatible Node 22 |
 
-Every push to the production branch triggers a fresh Pages deployment when Git integration is enabled.
+The repository produces plain static files, so no Cloudflare adapter is required.
 
-## Cloudflare Workers Static Assets
+## Workers Static Assets — advanced
 
-The repository also includes `wrangler.jsonc` with `assets.directory` set to `./dist`. Change the project name, configure `SITE_URL`, then run:
+Use this path if you prefer Wrangler/CLI deployment or expect to add Worker behavior later. Update the Worker project name, set `SITE_URL`, then run:
 
 ```bash
 npm run deploy:cf
 ```
 
-Because the default site is fully prerendered, no Worker entry point or `@astrojs/cloudflare` adapter is needed.
+`wrangler.jsonc` serves `./dist`, uses trailing-slash HTML handling and returns the custom `404.html` with HTTP 404 for unknown paths.
 
-See `docs/deployment.md` for more deployment details.
+See **[Deployment](docs/deployment.md)** for details.
 
-## Project checks
+## Before you deploy
 
-```bash
-npm run typecheck
-npm run test
-npm run check:content
-npm run check:safety
-npm run build
-```
+- [ ] Replace site title, description and author
+- [ ] Replace repository and social URLs
+- [ ] Replace the brand mark and favicon
+- [ ] Replace the default 1200×630 OG image
+- [ ] Replace the About content if the generic example is not enough
+- [ ] Keep, edit or remove the demo posts
+- [ ] Set `SITE_URL`
+- [ ] Run `npm run check`
+- [ ] Run `npm run check:template`
+- [ ] Run `npm run build:production`
 
-`npm run check` runs the complete sequence. CI requires the same gate to pass before a change is considered release-ready.
+## Template cleanup
 
-`check:safety` intentionally scans the public implementation for production identifiers and common secret patterns. The provenance/audit documents are separate records and are not used as application input.
+The repository includes demo content to show what the starter can do. You can safely replace or delete:
+
+- demo posts in `src/content/posts/`
+- homepage copy in the main config
+- the generic About page content
+- `public/favicon.svg`
+- `public/og.png`
+
+Keep `LICENSE` and `THIRD_PARTY_NOTICES.md`. Keep the configuration/content schema structure unless you intentionally want to change the starter contract.
+
+## Optional integrations
+
+- **Giscus:** rendered below article content only when all required Giscus environment values exist.
+- **Cloudflare Web Analytics:** loaded globally when `PUBLIC_CF_BEACON_TOKEN` is configured.
+- **Umami:** loaded globally only when both the script URL and website ID are configured.
+
+No production account identifier ships as an integration default.
 
 ## Project structure
 
@@ -161,31 +193,16 @@ src/pages/                      Static routes and feeds
 src/styles/global.css           Replaceable visual layer
 astro-publish-kit.config.mjs    Primary site configuration
 scripts/                        Authoring and quality checks
-docs/                           Content, customization, deployment docs
+docs/                           Content, configuration and deployment docs
 ```
 
 ## Scope
 
-`feature-matrix.md` is the current product contract. The initial release intentionally excludes:
-
-- databases and CMS backends;
-- authentication;
-- migration tooling from any personal site;
-- built-in ad accounts;
-- mass AI content generation;
-- game/wiki-specific components;
-- a clone of AstroPaper, Fuwari, Retypeset, or AnvilWiki's visual identity.
+v0.1.x intentionally does not include i18n routing, Mermaid, LaTeX, dynamic OG generation, galleries, a multi-author system, CMS/admin/database/auth features, AI writing, ads, or a heavy theme configuration framework.
 
 ## Provenance
 
-This repository has an independent Git history. It was built after auditing an existing Astro blog and researching several public projects; private content and source history were not copied.
-
-See:
-
-- `source-audit.md`
-- `reference-projects.md`
-- `feature-matrix.md`
-- `THIRD_PARTY_NOTICES.md`
+This repository has independent Git history and a small long-lived provenance record. See `PROVENANCE.md` and `THIRD_PARTY_NOTICES.md`.
 
 ## License
 
