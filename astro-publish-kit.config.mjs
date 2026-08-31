@@ -4,14 +4,15 @@ const configuredUrl = process.env.SITE_URL || "https://example.com";
 const config = {
   site: {
     title: "AstroPublishKit",
-    shortTitle: "APK",
-    description: "A clean Astro starter for publishing fast, searchable, SEO-ready content sites.",
+    shortTitle: "AstroPublishKit",
+    description:
+      "A static-first Astro publishing starter with MDX, Pagefind, SEO, quality gates, and Cloudflare deployment.",
     url: configuredUrl.replace(/\/+$/, ""),
     language: "en",
     locale: "en_US",
     author: {
-      name: "Your Name",
-      url: "/about"
+      name: "oyjq0000",
+      url: "https://github.com/oyjq0000"
     },
     defaultOgImage: "/og.svg"
   },
@@ -23,11 +24,13 @@ const config = {
     { label: "About", href: "/about" }
   ],
   social: [
-    { label: "GitHub", href: "https://github.com/your-name" }
+    { label: "GitHub", href: "https://github.com/oyjq0000/AstroPublishKit" },
+    { label: "Live Demo", href: "https://astropublishkit.pages.dev/" }
   ],
   home: {
     heading: "Publish without rebuilding your stack every time.",
-    intro: "AstroPublishKit gives you a typed content model, static search, SEO primitives, quality checks, and Cloudflare-ready output while keeping the visual layer easy to replace."
+    intro:
+      "AstroPublishKit gives you a typed content model, static search, SEO primitives, quality checks, and Cloudflare-ready output while keeping the visual layer easy to replace."
   }
 };
 

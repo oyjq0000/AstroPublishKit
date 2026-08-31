@@ -4,9 +4,11 @@ const year = new Date().getFullYear();
 ---
 <footer class="site-footer">
   <div class="shell footer-inner">
-    <p>© {year} {kit.site.author.name}. Built with AstroPublishKit.</p>
+    <p>© {year} AstroPublishKit contributors. MIT licensed.</p>
     <div class="footer-links">
-      {kit.social.map((item: { label: string; href: string }) => <a href={item.href} rel="me">{item.label}</a>)}
+      {kit.social.map((item: { label: string; href: string }) => (
+        <a href={item.href} rel="noopener noreferrer">{item.label}</a>
+      ))}
       <a href="/rss.xml">RSS</a>
     </div>
   </div>
