@@ -23,6 +23,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Format diagnostics
+        run: |
+          npx prettier --write feature-matrix.md README.md README.zh-CN.md scripts/drafts.mjs scripts/new-post.mjs src/lib/content-rules.mjs
+          git diff -- feature-matrix.md README.md README.zh-CN.md scripts/drafts.mjs scripts/new-post.mjs src/lib/content-rules.mjs
       - name: Verify
         run: npm run check
       - name: Production smoke build
