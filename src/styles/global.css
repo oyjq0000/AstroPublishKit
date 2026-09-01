@@ -362,6 +362,27 @@ button {
   margin-top: 1rem;
   font-weight: 650;
 }
+.quick-answer {
+  margin-top: 1.5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.quick-answer-label {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 760;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.quick-answer p {
+  margin: 0.4rem 0 0;
+  font-size: 1rem;
+  line-height: 1.65;
+}
 .article-cover {
   width: 100%;
   margin-top: 2rem;

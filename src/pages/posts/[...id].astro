@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BackToTop from "../../components/BackToTop.astro";
 import Giscus from "../../components/Giscus.astro";
+import QuickAnswer from "../../components/QuickAnswer.astro";
 import Share from "../../components/Share.astro";
 import Toc from "../../components/Toc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
@@ -73,6 +74,7 @@ const breadcrumbLd = {
       <h1 data-pagefind-meta="title">{post.data.title}</h1>
       <p class="article-deck">{post.data.description}</p>
       <div class="article-byline">By {author}</div>
+      {post.data.summary && <QuickAnswer text={post.data.summary} />}
       {
         post.data.cover && (
           <img class="article-cover" src={post.data.cover.src} alt={post.data.cover.alt} loading="eager" />

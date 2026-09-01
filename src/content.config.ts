@@ -6,6 +6,8 @@ import {
   DEFAULT_POST_LANG,
   POST_DESCRIPTION_MAX_LENGTH,
   POST_DESCRIPTION_MIN_LENGTH,
+  POST_SUMMARY_MAX_LENGTH,
+  POST_SUMMARY_MIN_LENGTH,
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
 } from "./lib/content-rules.mjs";
@@ -15,6 +17,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string().min(POST_TITLE_MIN_LENGTH).max(POST_TITLE_MAX_LENGTH),
     description: z.string().min(POST_DESCRIPTION_MIN_LENGTH).max(POST_DESCRIPTION_MAX_LENGTH),
+    summary: z.string().min(POST_SUMMARY_MIN_LENGTH).max(POST_SUMMARY_MAX_LENGTH).optional(),
     date: z.coerce.date(),
     lastModified: z.coerce.date().optional(),
     category: z.string().min(1).default(DEFAULT_POST_CATEGORY),

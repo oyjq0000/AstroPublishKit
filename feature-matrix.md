@@ -48,7 +48,7 @@ Status legend:
 | End-to-end writing workflow              | ✅ Implemented  | v0.2.0                 | Create → write → preview → check → publish documentation.                                          |
 | Image URI portability validation         | ✅ Implemented  | v0.2.1                 | Standard Markdown body images reject machine-local paths and non-Web URI schemes.                  |
 | Existing-site migration checklist        | ✅ Implemented  | v0.2.1                 | Generic content, image, URL/SEO, discovery and final-verification guidance.                        |
-| Quick Answer / Summary                   | ⏳ Planned      | v0.3.0+                | Candidate optional article summary field, now backed by real migration demand.                     |
+| Quick Answer / Summary                   | ✅ Implemented  | v0.3.0                 | Optional validated `summary` field rendered as a concise reader-facing article block.              |
 | Related posts                            | ⏳ Planned      | v0.3.0+                | Candidate simple shared-tag/category/recent scoring.                                               |
 | Previous / next article                  | ⏳ Planned      | v0.3.0+                | Candidate same-category navigation by date.                                                        |
 | FAQ + FAQPage JSON-LD                    | ⏳ Planned      | v0.3.0+                | Visible FAQ and structured data should share one source.                                           |
@@ -88,7 +88,7 @@ Targeted hardening from real migration validation: portable Markdown image-sourc
 
 ### v0.3.0+
 
-Candidates that add article-facing or optional complexity: related/previous/next navigation, summary/FAQ/freshness helpers, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
+Current v0.3.0 development starts with the optional Summary / Quick Answer field and visible article block. Remaining candidates include related/previous/next navigation, FAQ/freshness helpers, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
 
 ## Product boundary
 

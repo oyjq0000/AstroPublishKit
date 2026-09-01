@@ -104,6 +104,7 @@ SITE_URL=https://your-domain.example npm run build:production
 - `npm run drafts` 与仅开发环境可用的 draft 直接预览
 - 响应式浅色 / 深色界面与移动端导航
 - 文章、分类、标签、归档、阅读时长和文章元数据
+- 可选的文章 Summary / Quick Answer 摘要块
 - Pagefind 静态搜索
 - TOC、分享、返回顶部
 - Callout、Accordion、YouTube MDX 组件
@@ -155,6 +156,7 @@ Pagefind：直接从静态构建产物生成搜索结果。
 ---
 title: "我的第一篇文章"
 description: "一段可以独立用于读者预览和搜索结果的文章摘要。"
+summary: "可选的简短直接答案，会显示在文章顶部附近。"
 date: 2026-08-31
 category: "Engineering"
 tags: ["Astro"]
@@ -168,6 +170,7 @@ lang: "en"
 几个容易误解的语义：
 
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
+- `summary` 是可选纯文本，用于页面可见的 Quick Answer；它和继续服务 metadata / 列表的 `description` 是两个不同字段。
 - `author` 可选。不填时继承站点作者；填写时仅覆盖当前文章作者。
 - v0.2.0 中 `lang` 仍然只是文章元数据，**不会**开启多语言路由、UI 翻译、fallback 或 hreflang。
 - `draft: true` 只会在 `npm run dev` 时允许通过直接 URL 预览；production output 不生成该页面。
@@ -282,7 +285,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-v0.2.1 在现有本地发布流程上加入真实内容迁移加固，但不加入自动重定向、URL 保留迁移，也不加入 Summary / Quick Answer、Related Posts、Previous / Next 等新的文章 UI 功能。
+当前 `main` 在 v0.2.1 基础上加入了可选的 Summary / Quick Answer 字段与文章摘要块；Related Posts、Previous / Next、FAQ 和自动重定向仍未加入。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 
