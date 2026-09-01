@@ -1,0 +1,28 @@
+---
+import type { Post } from "../lib/content";
+import { postUrl } from "../lib/content";
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section class="related-posts" aria-labelledby="related-posts-heading" data-related-posts>
+      <h2 id="related-posts-heading">Related posts</h2>
+      <div class="related-post-list">
+        {posts.map((post) => (
+          <article class="related-post">
+            <h3>
+              <a href={postUrl(post)}>{post.data.title}</a>
+            </h3>
+            <p>{post.data.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}

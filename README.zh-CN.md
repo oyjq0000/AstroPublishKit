@@ -105,6 +105,7 @@ SITE_URL=https://your-domain.example npm run build:production
 - 响应式浅色 / 深色界面与移动端导航
 - 文章、分类、标签、归档、阅读时长和文章元数据
 - 可选的文章 Summary / Quick Answer 摘要块
+- 基于精确共享标签与分类、在构建阶段生成的确定性 Related Posts
 - Pagefind 静态搜索
 - TOC、分享、返回顶部
 - Callout、Accordion、YouTube MDX 组件
@@ -171,6 +172,7 @@ lang: "en"
 
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
 - `summary` 是可选纯文本，用于页面可见的 Quick Answer；它和继续服务 metadata / 列表的 `description` 是两个不同字段。
+- Related Posts 不需要额外 Frontmatter：构建时只从可发现的已发布文章中，按精确共享 `tags` 与 `category` 自动排序；不需要后端、AI 推荐服务或手工 related-post ID。
 - `author` 可选。不填时继承站点作者；填写时仅覆盖当前文章作者。
 - v0.2.0 中 `lang` 仍然只是文章元数据，**不会**开启多语言路由、UI 翻译、fallback 或 hreflang。
 - `draft: true` 只会在 `npm run dev` 时允许通过直接 URL 预览；production output 不生成该页面。
@@ -195,19 +197,19 @@ npm run preview
 
 `npm run check` 是本地和 CI 共用的唯一 Release Gate。
 
-| 检查                     | 作用                                                |
-| ------------------------ | --------------------------------------------------- |
-| `npm run typecheck`      | Astro / TypeScript 正确性                           |
-| `npm run lint`           | JS、MJS、TS、Astro 的 ESLint 检查                   |
-| `npm run format:check`   | 使用 Prettier 校验格式但不修改文件                  |
-| `npm run test`           | URL、内容、taxonomy、authoring、文本与 SEO 回归测试 |
-| `npm run check:config`   | 通用站点配置与可选集成验证                          |
-| `npm run check:content`  | 内容约定、图片 URI 可移植性与作者反馈               |
-| `npm run build`          | 最终静态输出 + Pagefind 索引                        |
-| `npm run check:links`    | 离线检查生成后的站内页面链接                        |
-| `npm run check:sitemap`  | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |
-| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件                  |
-| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留        |
+| 检查                     | 作用                                                           |
+| ------------------------ | -------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript 正确性                                      |
+| `npm run lint`           | JS、MJS、TS、Astro 的 ESLint 检查                              |
+| `npm run format:check`   | 使用 Prettier 校验格式但不修改文件                             |
+| `npm run test`           | URL、内容、taxonomy、Related Posts、authoring、文本与 SEO 测试 |
+| `npm run check:config`   | 通用站点配置与可选集成验证                                     |
+| `npm run check:content`  | 内容约定、图片 URI 可移植性与作者反馈                          |
+| `npm run build`          | 最终静态输出 + Pagefind 索引                                   |
+| `npm run check:links`    | 离线检查生成后的站内页面链接                                   |
+| `npm run check:sitemap`  | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod`            |
+| `npm run check:safety`   | 常见 secret 模式与误提交的环境文件                             |
+| `npm run check:template` | 使用假用户身份构建并扫描生成站点中的身份残留                   |
 
 CI 执行 `npm ci`，然后执行 `npm run check`。阻塞错误、非阻塞 Warning 与生产 smoke check 的详细说明见 **[质量检查文档](docs/quality-checks.md)**。
 
@@ -285,7 +287,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-当前 `main` 在 v0.2.1 基础上加入了可选的 Summary / Quick Answer 字段与文章摘要块；Related Posts、Previous / Next、FAQ 和自动重定向仍未加入。
+当前 `main` 正在向 v0.3.0 开发，已经包含可选 Summary / Quick Answer 与确定性的 Related Posts；Previous / Next、Freshness、FAQ 和自动重定向仍未实现。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 

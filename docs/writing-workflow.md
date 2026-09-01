@@ -64,6 +64,8 @@ cover:
 
 Use `YYYY-MM-DD` for `date` and `lastModified`. `summary` is optional plain text for the visible Quick Answer block and should not simply duplicate `description`. See [Content authoring](content.md) for the complete field semantics.
 
+There is no Related Posts frontmatter field. Keep `category` and `tags` truthful and consistent: article recommendations are generated automatically at build time from exact shared labels, without manual related-post IDs.
+
 ## 3. Write Markdown or MDX
 
 Use `.md` for normal Markdown. Nothing about the MDX component layer is required for Markdown posts.

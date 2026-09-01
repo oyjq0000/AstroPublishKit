@@ -47,6 +47,7 @@ Runs the Node test suite. The suite covers:
 - reading-time and text helpers;
 - draft / noindex publishing semantics and development draft preview semantics;
 - date sorting and category / tag filtering;
+- Related Posts eligibility, exact shared-taxonomy scoring, deterministic date/ID tie-breaks, limits and input immutability;
 - taxonomy slug behavior, including Unicode and collisions;
 - JSON-LD graph assembly and SEO URL invariants;
 - authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
@@ -148,7 +149,7 @@ Scans for common secret patterns and accidental environment-file commits. It rem
 
 ## `check:template`
 
-Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template.
+Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article.
 
 This is part of `npm run check`, so CI does not need a separate template step.
 
