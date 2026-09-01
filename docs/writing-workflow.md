@@ -70,6 +70,8 @@ Use `.mdx` only when the article needs a component such as Callout, Accordion or
 
 The page layout already renders the article title as H1, so begin body sections at H2 (`##`).
 
+For body images, prefer portable Markdown destinations: public-root paths such as `/images/...`, stable HTTP(S) URLs, or valid content-relative paths such as `./image.webp` and `../images/image.webp`. Do not paste local application/file URIs into content. See [Content authoring](content.md#body-images).
+
 ## 4. Preview while writing
 
 Start Astro's development server:
@@ -96,7 +98,7 @@ Run the author-facing content check while writing when useful:
 npm run check:content
 ```
 
-Blocking problems are reported as `ERROR`; editorial suggestions are reported as `WARN`. Each diagnostic includes the source file and, when practical, a concrete fix. Warnings do not block a release.
+Blocking problems are reported as `ERROR`; editorial suggestions are reported as `WARN`. Each diagnostic includes the source file and, when practical, a concrete fix. Warnings do not block a release. Non-portable Markdown image sources are blocking because they cannot be relied on after deployment.
 
 Before publishing, run the complete release gate:
 

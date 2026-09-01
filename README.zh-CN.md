@@ -94,6 +94,8 @@ SITE_URL=https://your-domain.example npm run build:production
 
 完整的 create → write → preview → check → publish 流程见 **[Writing workflow](docs/writing-workflow.md)**。
 
+如果是迁移已有站点，请先阅读 **[Existing blog → AstroPublishKit migration checklist](docs/migration-checklist.md)**；内容能成功构建，并不代表旧 URL、图片资产和 SEO 连续性会自动保留。
+
 ## 功能
 
 - Astro 7 + Markdown / MDX + 类型化 Content Collections
@@ -111,6 +113,7 @@ SITE_URL=https://your-domain.example npm run build:production
 - 可选 Giscus、Cloudflare Web Analytics 和 Umami，默认关闭
 - ESLint、Prettier、配置/内容/链接/Sitemap/安全检查、单元测试与模板回归检查
 - 面向作者的内容诊断：错误、警告、修复提示和最终汇总
+- Markdown 正文图片 URI 可移植性检查，阻止本机文件路径和非 Web scheme
 - 使用统一 Release Gate 的 GitHub Actions CI
 - Cloudflare Pages，以及可选的 Workers Static Assets 部署
 
@@ -196,7 +199,7 @@ npm run preview
 | `npm run format:check`   | 使用 Prettier 校验格式但不修改文件                  |
 | `npm run test`           | URL、内容、taxonomy、authoring、文本与 SEO 回归测试 |
 | `npm run check:config`   | 通用站点配置与可选集成验证                          |
-| `npm run check:content`  | 内容约定、taxonomy 安全与作者反馈                   |
+| `npm run check:content`  | 内容约定、图片 URI 可移植性与作者反馈               |
 | `npm run build`          | 最终静态输出 + Pagefind 索引                        |
 | `npm run check:links`    | 离线检查生成后的站内页面链接                        |
 | `npm run check:sitemap`  | Sitemap Origin、页面、排除项、重复 URL 与 `lastmod` |

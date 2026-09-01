@@ -46,9 +46,11 @@ Status legend:
 | Cover authoring convention               | ✅ Implemented  | v0.2.0                 | Public-root path semantics, alt requirement and optional per-post directory convention documented. |
 | MDX component authoring guide            | ✅ Implemented  | v0.2.0                 | Central props/import/examples guide for the three existing primitives.                             |
 | End-to-end writing workflow              | ✅ Implemented  | v0.2.0                 | Create → write → preview → check → publish documentation.                                          |
+| Image URI portability validation         | ✅ Implemented  | v0.2.1                 | Standard Markdown body images reject machine-local paths and non-Web URI schemes.                  |
+| Existing-site migration checklist        | ✅ Implemented  | v0.2.1                 | Generic content, image, URL/SEO, discovery and final-verification guidance.                        |
+| Quick Answer / Summary                   | ⏳ Planned      | v0.3.0+                | Candidate optional article summary field, now backed by real migration demand.                     |
 | Related posts                            | ⏳ Planned      | v0.3.0+                | Candidate simple shared-tag/category/recent scoring.                                               |
 | Previous / next article                  | ⏳ Planned      | v0.3.0+                | Candidate same-category navigation by date.                                                        |
-| Quick Answer / Summary                   | ⏳ Planned      | v0.3.0+                | Candidate optional article summary field.                                                          |
 | FAQ + FAQPage JSON-LD                    | ⏳ Planned      | v0.3.0+                | Visible FAQ and structured data should share one source.                                           |
 | Gallery + lightbox                       | ⏳ Planned      | v0.3.0+                | Not part of v0.2.0.                                                                                |
 | Reading progress                         | ⏳ Planned      | v0.3.0+                | Candidate progressive enhancement.                                                                 |
@@ -79,6 +81,10 @@ Engineering and release reliability: reproducible installs, ESLint, Prettier, co
 ### v0.2.0 — Publishing Experience
 
 Authoring workflow improvements without adding a backend: guided and non-interactive post creation, shared frontmatter rules, draft listing, safe draft preview during local development, clearer content diagnostics, cover/MDX authoring documentation and a single end-to-end writing workflow.
+
+### v0.2.1 — Real-world Content Hardening
+
+Targeted hardening from real migration validation: portable Markdown image-source checks and a generic existing-site migration checklist. This does not add redirect automation, URL-preserving migration or new article UI features.
 
 ### v0.3.0+
 

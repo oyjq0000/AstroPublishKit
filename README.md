@@ -94,6 +94,8 @@ SITE_URL=https://your-domain.example npm run build:production
 
 See **[Writing workflow](docs/writing-workflow.md)** for the complete create → write → preview → check → publish sequence.
 
+Migrating an existing site? See **[Existing blog → AstroPublishKit migration checklist](docs/migration-checklist.md)** before assuming content success also preserves URLs, assets or SEO continuity.
+
 ## What you get
 
 - Astro 7 + Markdown/MDX + typed Content Collections
@@ -111,6 +113,7 @@ See **[Writing workflow](docs/writing-workflow.md)** for the complete create →
 - optional Giscus, Cloudflare Web Analytics and Umami, all off by default
 - ESLint, Prettier, config/content/link/sitemap/safety checks, unit tests and template regression checks
 - author-facing content diagnostics with errors, warnings, fix hints and a final summary
+- Markdown body-image URI portability checks for local filesystem and non-Web sources
 - GitHub Actions CI with one release gate
 - Cloudflare Pages plus optional Workers Static Assets deployment
 
@@ -196,7 +199,7 @@ No additional preview wrapper is required; these two existing modes have distinc
 | `npm run format:check`   | Prettier verification without modifying files                     |
 | `npm run test`           | URL, content, taxonomy, authoring, text and SEO regression tests  |
 | `npm run check:config`   | generic site/config/integration validation                        |
-| `npm run check:content`  | content conventions, taxonomy safety and editorial feedback       |
+| `npm run check:content`  | content conventions, image URI portability and editorial feedback |
 | `npm run build`          | final static output + Pagefind index                              |
 | `npm run check:links`    | offline validation of generated internal page links               |
 | `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
