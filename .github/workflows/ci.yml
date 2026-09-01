@@ -12,10 +12,26 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Configure Windows Git line endings
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Verify LF checkout on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $crlfFiles = git ls-files --eol | Select-String 'w/crlf'
+          if ($crlfFiles) {
+            $crlfFiles
+            throw 'Tracked text files were checked out with CRLF.'
+          }
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
@@ -27,5 +43,5 @@ jobs:
         run: npm run check
       - name: Production smoke build
         env:
-          SITE_URL: https://example.org
+          SITE_URL: https://template-validation.example
         run: npm run build:production
