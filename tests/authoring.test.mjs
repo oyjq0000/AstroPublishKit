@@ -52,6 +52,7 @@ test("generated frontmatter is schema-aligned and draft-safe by default", () => 
   const source = createPostDocument({
     title: "Authoring helpers",
     description: "A sufficiently detailed description for the generated post fixture.",
+    summary: "A concise quick answer that is visible near the top of the article.",
     category: "Engineering",
     tags: ["Astro", "MDX"],
     date: "2026-08-31",
@@ -60,11 +61,32 @@ test("generated frontmatter is schema-aligned and draft-safe by default", () => 
   assert.ok(frontmatter);
   assert.equal(frontmatterScalar(frontmatter, "title"), "Authoring helpers");
   assert.equal(frontmatterScalar(frontmatter, "date"), "2026-08-31");
+  assert.equal(
+    frontmatterScalar(frontmatter, "summary"),
+    "A concise quick answer that is visible near the top of the article.",
+  );
   assert.deepEqual(frontmatterList(frontmatter, "tags"), ["Astro", "MDX"]);
   assert.equal(frontmatterBoolean(frontmatter, "draft"), true);
   assert.equal(frontmatterBoolean(frontmatter, "noindex"), false);
   assert.equal(frontmatterBoolean(frontmatter, "featured"), false);
   assert.equal(frontmatterScalar(frontmatter, "lang"), "en");
+});
+
+test("optional summary is omitted when it is not provided", () => {
+  const source = createPostDocument({
+    title: "No quick answer",
+    description: "A sufficiently detailed description for a post without a quick answer.",
+  });
+  assert.doesNotMatch(source, /^summary:/m);
+});
+
+test("optional summary uses the shared supported length range", () => {
+  const base = {
+    title: "Quick answer validation",
+    description: "A sufficiently detailed description for validating quick answer length.",
+  };
+  assert.throws(() => createPostDocument({ ...base, summary: "x".repeat(19) }), /Summary must be 20-500 characters/);
+  assert.throws(() => createPostDocument({ ...base, summary: "x".repeat(501) }), /Summary must be 20-500 characters/);
 });
 
 test("non-interactive new-post keeps compatibility and supports mdx", () => {

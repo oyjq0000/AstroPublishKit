@@ -8,6 +8,8 @@ import {
   DEFAULT_POST_LANG,
   POST_DESCRIPTION_MAX_LENGTH,
   POST_DESCRIPTION_MIN_LENGTH,
+  POST_SUMMARY_MAX_LENGTH,
+  POST_SUMMARY_MIN_LENGTH,
   createPostDocument,
   normalizePostExtension,
   normalizePostSlug,
@@ -87,6 +89,17 @@ async function askDescription(rl) {
   }
 }
 
+async function askOptionalSummary(rl) {
+  while (true) {
+    const value = (await rl.question("Quick answer (optional): ")).trim();
+    if (!value) return "";
+    if (value.length >= POST_SUMMARY_MIN_LENGTH && value.length <= POST_SUMMARY_MAX_LENGTH) return value;
+    console.error(
+      `✗ Quick answer must be ${POST_SUMMARY_MIN_LENGTH}-${POST_SUMMARY_MAX_LENGTH} characters when provided.`,
+    );
+  }
+}
+
 async function askWithDefault(rl, label, defaultValue) {
   const value = (await rl.question(`${label} [${defaultValue}]: `)).trim();
   return value || defaultValue;
@@ -126,6 +139,7 @@ async function interactiveOptions(presetExtension = "") {
     ensureAvailable(slug);
 
     const description = await askDescription(rl);
+    const summary = await askOptionalSummary(rl);
     const category = await askWithDefault(rl, "Category", DEFAULT_POST_CATEGORY);
     const tags = parseTags(await rl.question("Tags (comma-separated): "));
     const author = (await rl.question("Author (optional): ")).trim();
@@ -134,7 +148,7 @@ async function interactiveOptions(presetExtension = "") {
     const featured = await askBoolean(rl, "Featured?", false);
     const extension = await askExtension(rl, presetExtension);
 
-    return { title, slug, description, category, tags, author, lang, draft, featured, extension };
+    return { title, slug, description, summary, category, tags, author, lang, draft, featured, extension };
   } finally {
     rl.close();
   }
@@ -146,6 +160,7 @@ function nonInteractiveOptions(requested, extension = "") {
     title: titleFromSlug(slug),
     slug,
     description: DEFAULT_POST_DESCRIPTION,
+    summary: "",
     category: DEFAULT_POST_CATEGORY,
     tags: [],
     author: "",
@@ -165,6 +180,7 @@ function writePost(options) {
     createPostDocument({
       title: options.title,
       description: options.description,
+      summary: options.summary,
       category: options.category,
       tags: options.tags,
       author: options.author,

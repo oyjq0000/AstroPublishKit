@@ -8,6 +8,7 @@ Use this checklist when moving an existing content site into AstroPublishKit. It
 - [ ] Map required frontmatter fields: `title`, `description`, `date`, `category` and `tags`.
 - [ ] Decide what to do with unsupported or custom frontmatter instead of silently dropping it.
 - [ ] Map per-post `author` values only when they should override the site-level author.
+- [ ] Map a source quick-answer/summary field to optional `summary` only when it adds a concise reader-facing answer; do not blindly duplicate `description`.
 - [ ] Preserve `date` and map meaningful update timestamps to `lastModified`.
 - [ ] Map unpublished content to `draft: true`.
 - [ ] Map intentionally published-but-not-indexable content to `noindex: true`.

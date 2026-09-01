@@ -6,6 +6,8 @@ export const POST_DESCRIPTION_MIN_LENGTH = 20;
 export const POST_DESCRIPTION_MAX_LENGTH = 240;
 export const POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH = 50;
 export const POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH = 160;
+export const POST_SUMMARY_MIN_LENGTH = 20;
+export const POST_SUMMARY_MAX_LENGTH = 500;
 export const DEFAULT_POST_CATEGORY = "General";
 export const DEFAULT_POST_LANG = "en";
 export const DEFAULT_POST_DESCRIPTION = "Replace this description with a useful summary of at least twenty characters.";
@@ -88,6 +90,7 @@ export function formatPostDate(value = new Date()) {
 export function createPostFrontmatter(options = {}) {
   const title = requiredText(options.title, "title");
   const description = requiredText(options.description ?? DEFAULT_POST_DESCRIPTION, "description");
+  const summary = String(options.summary ?? "").trim();
   const category = requiredText(options.category ?? DEFAULT_POST_CATEGORY, "category");
   const lang = requiredText(options.lang ?? DEFAULT_POST_LANG, "language");
   const tags = parseTags(options.tags);
@@ -98,13 +101,13 @@ export function createPostFrontmatter(options = {}) {
   if (description.length < POST_DESCRIPTION_MIN_LENGTH || description.length > POST_DESCRIPTION_MAX_LENGTH) {
     throw new Error(`Description must be ${POST_DESCRIPTION_MIN_LENGTH}-${POST_DESCRIPTION_MAX_LENGTH} characters.`);
   }
+  if (summary && (summary.length < POST_SUMMARY_MIN_LENGTH || summary.length > POST_SUMMARY_MAX_LENGTH)) {
+    throw new Error(`Summary must be ${POST_SUMMARY_MIN_LENGTH}-${POST_SUMMARY_MAX_LENGTH} characters when provided.`);
+  }
 
-  const lines = [
-    "---",
-    `title: ${yamlString(title)}`,
-    `description: ${yamlString(description)}`,
-    `date: ${formatPostDate(options.date)}`,
-  ];
+  const lines = ["---", `title: ${yamlString(title)}`, `description: ${yamlString(description)}`];
+  if (summary) lines.push(`summary: ${yamlString(summary)}`);
+  lines.push(`date: ${formatPostDate(options.date)}`);
 
   if (options.lastModified) lines.push(`lastModified: ${formatPostDate(options.lastModified)}`);
 

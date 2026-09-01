@@ -1,6 +1,7 @@
 ---
 title: Start publishing with this starter
 description: Configure the starter, create your first post, run the quality checks, and produce a static build ready for deployment.
+summary: Start by replacing the demo identity, then create a draft, run the release gate, and deploy the generated static output.
 date: 2026-08-31
 category: Getting Started
 tags: [Astro, Publishing]

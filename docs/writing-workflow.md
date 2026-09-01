@@ -40,6 +40,7 @@ The generator writes a stable frontmatter shape and leaves optional fields out w
 ---
 title: "A useful, specific title"
 description: "A standalone summary for readers and search results."
+summary: "A concise direct answer shown near the top of the article."
 date: 2026-08-31
 category: "Engineering"
 tags: ["Astro", "Static Sites"]
@@ -53,6 +54,7 @@ lang: "en"
 Common optional fields are:
 
 ```yaml
+summary: "A concise direct answer shown near the top of the article."
 lastModified: 2026-09-03
 author: "Your Name"
 cover:
@@ -60,7 +62,7 @@ cover:
   alt: "Diagram showing the publishing workflow"
 ```
 
-Use `YYYY-MM-DD` for `date` and `lastModified`. See [Content authoring](content.md) for the complete field semantics.
+Use `YYYY-MM-DD` for `date` and `lastModified`. `summary` is optional plain text for the visible Quick Answer block and should not simply duplicate `description`. See [Content authoring](content.md) for the complete field semantics.
 
 ## 3. Write Markdown or MDX
 

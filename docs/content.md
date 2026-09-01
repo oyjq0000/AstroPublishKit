@@ -45,6 +45,7 @@ A complete example is:
 ---
 title: "A useful, specific title"
 description: "A standalone summary for readers and search results."
+summary: "A concise direct answer shown near the top of the article."
 date: 2026-08-31
 lastModified: 2026-08-31
 category: "Engineering"
@@ -66,6 +67,7 @@ You do not need to include every optional field in every article.
 
 - `title`: required, 1–120 characters. The article route renders it as the page H1; do not add another Markdown H1 in the body.
 - `description`: required, 20–240 characters. It is reused for page metadata and article previews; the content checker recommends 50–160 characters when practical.
+- `summary`: optional plain text, 20–500 characters when present. It renders as a visible **Quick answer** block near the top of the article. Keep it concise and answer-oriented; it does not replace `description` and is not required for every post.
 - `date`: required publication date. Use `YYYY-MM-DD` in source frontmatter for a predictable human-readable format.
 - `lastModified`: optional. Use `YYYY-MM-DD`; when omitted, metadata falls back to `date`.
 - `category`: one broad section for the article. The default is `General`.

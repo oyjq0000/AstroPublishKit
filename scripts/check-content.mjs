@@ -4,6 +4,8 @@ import {
   POST_DESCRIPTION_MIN_LENGTH,
   POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH,
   POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH,
+  POST_SUMMARY_MAX_LENGTH,
+  POST_SUMMARY_MIN_LENGTH,
   frontmatterList,
   frontmatterScalar,
   isPortableImageSource,
@@ -144,6 +146,17 @@ for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
       `Description is longer than the recommended ${POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH} characters.`,
       `Aim for ${POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH}-${POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH} characters when practical.`,
     );
+  }
+
+  if (/^summary:/m.test(frontmatter)) {
+    const summary = frontmatterScalar(frontmatter, "summary");
+    if (summary.length < POST_SUMMARY_MIN_LENGTH || summary.length > POST_SUMMARY_MAX_LENGTH) {
+      addError(
+        relative,
+        `Summary must be ${POST_SUMMARY_MIN_LENGTH}-${POST_SUMMARY_MAX_LENGTH} characters when provided.`,
+        "Write one concise plain-text quick answer, or remove the optional summary field.",
+      );
+    }
   }
 
   const cleanBody = stripFencedCode(body);

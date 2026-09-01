@@ -104,6 +104,7 @@ Migrating an existing site? See **[Existing blog → AstroPublishKit migration c
 - draft listing and development-only direct draft preview
 - responsive light/dark interface with mobile navigation
 - posts, categories, tags, archive, reading time and article metadata
+- optional per-article Summary / Quick Answer block
 - Pagefind static search
 - table of contents, sharing and back-to-top
 - Callout, Accordion and YouTube MDX primitives
@@ -155,6 +156,7 @@ Generated posts use a consistent frontmatter shape. Optional fields such as `las
 ---
 title: "My useful post"
 description: "A useful standalone summary for readers and search engines."
+summary: "An optional concise answer displayed near the top of the article."
 date: 2026-08-31
 category: "Engineering"
 tags: ["Astro"]
@@ -168,6 +170,7 @@ lang: "en"
 A few semantics are worth making explicit:
 
 - `category` is one broad section; `tags` are zero or more specific topics.
+- `summary` is optional plain text for a visible Quick Answer block; it is separate from `description`, which still serves metadata and listings.
 - `author` is optional. When omitted, the site-level author is used; when set, it overrides the author for that post.
 - `lang` is article metadata only in v0.2.0. It does **not** enable multilingual routing, translated UI, fallback behavior, or hreflang.
 - `draft: true` is previewable by direct URL only during `npm run dev`; production output does not generate the page.
@@ -282,7 +285,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-v0.2.1 adds real-world content hardening on top of the local publishing workflow without adding redirect automation, URL-preserving migration, or new article UI features such as Summary / Quick Answer, Related Posts, or Previous / Next.
+Current `main` builds on v0.2.1 with an optional Summary / Quick Answer field and article block. Related Posts, Previous / Next, FAQ and redirect automation are still not included.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 

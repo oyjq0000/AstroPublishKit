@@ -50,7 +50,8 @@ Runs the Node test suite. The suite covers:
 - taxonomy slug behavior, including Unicode and collisions;
 - JSON-LD graph assembly and SEO URL invariants;
 - authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
-- `new-post` default draft behavior and duplicate-file protection using synthetic temporary projects;
+- `new-post` default draft behavior, optional summary serialization and duplicate-file protection using synthetic temporary projects;
+- optional Summary / Quick Answer length validation;
 - Markdown image parsing and URI portability, including CLI exit behavior for synthetic `.md` / `.mdx` fixtures.
 
 Tests use synthetic fixtures rather than private production posts and do not require network or Cloudflare access.
@@ -76,6 +77,7 @@ Partially configured optional integrations produce warnings when the implementat
 Blocking content errors include:
 
 - missing required frontmatter keys;
+- an optional `summary` outside the supported 20–500 character range;
 - a body H1 when the page template already renders the title as H1;
 - Markdown images with empty alt text;
 - Markdown image sources that use clear local filesystem paths or non-Web URI schemes;

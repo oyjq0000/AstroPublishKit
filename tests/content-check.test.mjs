@@ -4,7 +4,12 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { isPortableImageSource, markdownImages } from "../src/lib/content-rules.mjs";
+import {
+  POST_SUMMARY_MAX_LENGTH,
+  POST_SUMMARY_MIN_LENGTH,
+  isPortableImageSource,
+  markdownImages,
+} from "../src/lib/content-rules.mjs";
 
 const checkContentScript = path.resolve("scripts/check-content.mjs");
 
@@ -14,8 +19,8 @@ function tempProject() {
   return root;
 }
 
-function postSource(body) {
-  return `---\ntitle: "Synthetic image portability fixture"\ndescription: "A synthetic fixture with enough description text to keep editorial checks focused on image portability."\ndate: 2026-09-01\ncategory: "Testing"\ntags: ["Images"]\n---\n\n${body}\n`;
+function postSource(body, extraFrontmatter = "") {
+  return `---\ntitle: "Synthetic content fixture"\ndescription: "A synthetic fixture with enough description text to keep editorial checks focused on the requested rule."\n${extraFrontmatter}date: 2026-09-01\ncategory: "Testing"\ntags: ["Images"]\n---\n\n${body}\n`;
 }
 
 function runContentCheck(root) {
@@ -60,6 +65,34 @@ test("image portability accepts web and relative sources and rejects local or no
     "custom-protocol://asset/123",
   ]) {
     assert.equal(isPortableImageSource(source), false, source);
+  }
+});
+
+test("check-content enforces the optional summary length when the field is present", () => {
+  const root = tempProject();
+  try {
+    fs.writeFileSync(
+      path.join(root, "src/content/posts/short.md"),
+      postSource("Body copy.", `summary: "${"x".repeat(POST_SUMMARY_MIN_LENGTH - 1)}"\n`),
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(root, "src/content/posts/long.mdx"),
+      postSource("Body copy.", `summary: "${"x".repeat(POST_SUMMARY_MAX_LENGTH + 1)}"\n`),
+      "utf8",
+    );
+
+    const result = runContentCheck(root);
+    assert.equal(result.status, 1);
+    assert.equal(
+      result.stderr.split(
+        `Summary must be ${POST_SUMMARY_MIN_LENGTH}-${POST_SUMMARY_MAX_LENGTH} characters when provided.`,
+      ).length - 1,
+      2,
+    );
+    assert.match(result.stdout, /2 errors/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
   }
 });
 
