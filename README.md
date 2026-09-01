@@ -105,6 +105,7 @@ Migrating an existing site? See **[Existing blog → AstroPublishKit migration c
 - responsive light/dark interface with mobile navigation
 - posts, categories, tags, archive, reading time and article metadata
 - optional per-article Summary / Quick Answer block
+- optional per-article FAQ with matching `FAQPage` JSON-LD from the same static source
 - deterministic build-time Related Posts from exact shared tags and category
 - deterministic same-category Previous / Next article navigation
 - static article freshness: visible `Updated` metadata plus a low-prominence notice after 365 days
@@ -174,6 +175,7 @@ A few semantics are worth making explicit:
 
 - `category` is one broad section; `tags` are zero or more specific topics.
 - `summary` is optional plain text for a visible Quick Answer block; it is separate from `description`, which still serves metadata and listings.
+- `faq` is an optional non-empty list of plain-text `question` / `answer` pairs. The same items render the visible FAQ and `FAQPage` JSON-LD at build time; when the field is absent, neither output is generated.
 - Related Posts require no extra frontmatter: discoverable published posts are ranked from exact shared tags and category at build time, with no backend, AI recommendation service or manual related-post IDs.
 - Previous / Next also requires no extra frontmatter: discoverable posts in the same exact category form a deterministic publication timeline, where Previous is older and Next is newer.
 - `lastModified` remains the only update field. When it is later than `date`, the article shows visible `Updated` metadata; freshness uses `lastModified || date`, and an effective date at least 365 days old receives a lightweight reader notice. The behavior is build-time only, with no backend or runtime freshness service.
@@ -291,7 +293,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-Current `main` builds toward v0.3.0 with optional Summary / Quick Answer, deterministic Related Posts, same-category Previous / Next navigation and static article freshness metadata/notices. FAQ and redirect automation are still not included.
+Current `main` now contains the planned v0.3.0 article feature set: optional Summary / Quick Answer, deterministic Related Posts, same-category Previous / Next navigation, static article freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. The package version remains 0.2.1 until a separate release PR; redirect automation is still not included.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 

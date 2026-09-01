@@ -105,6 +105,7 @@ SITE_URL=https://your-domain.example npm run build:production
 - 响应式浅色 / 深色界面与移动端导航
 - 文章、分类、标签、归档、阅读时长和文章元数据
 - 可选的文章 Summary / Quick Answer 摘要块
+- 可选的文章 FAQ，并从同一静态数据源生成匹配的 `FAQPage` JSON-LD
 - 基于精确共享标签与分类、在构建阶段生成的确定性 Related Posts
 - 同一精确分类内、按发布时间确定的 Previous / Next 文章导航
 - 静态文章 Freshness：可见 `Updated` 元数据，以及达到 365 天后的低干扰提示
@@ -174,6 +175,7 @@ lang: "en"
 
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
 - `summary` 是可选纯文本，用于页面可见的 Quick Answer；它和继续服务 metadata / 列表的 `description` 是两个不同字段。
+- `faq` 是可选且非空的纯文本 `question` / `answer` 列表。同一组数据在构建时同时生成页面可见 FAQ 与 `FAQPage` JSON-LD；未设置时两者都不会输出。
 - Related Posts 不需要额外 Frontmatter：构建时只从可发现的已发布文章中，按精确共享 `tags` 与 `category` 自动排序；不需要后端、AI 推荐服务或手工 related-post ID。
 - Previous / Next 同样不需要额外 Frontmatter：同一精确 `category` 中的可发现文章按发布时间形成确定性时间线，Previous 指更旧一篇，Next 指更新一篇。
 - `lastModified` 继续作为唯一的更新时间字段。当它晚于 `date` 时，文章会显示可见的 `Updated` 元数据；Freshness 使用 `lastModified || date`，有效日期达到 365 天时显示轻量读者提示。全部逻辑在构建阶段完成，不需要后端或运行时 Freshness 服务。
@@ -291,7 +293,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-当前 `main` 正在向 v0.3.0 开发，已经包含可选 Summary / Quick Answer、确定性的 Related Posts、同分类 Previous / Next 导航，以及静态文章 Freshness 元数据/提示；FAQ 和自动重定向仍未实现。
+当前 `main` 已包含计划中的 v0.3.0 文章功能集：可选 Summary / Quick Answer、确定性的 Related Posts、同分类 Previous / Next 导航、静态文章 Freshness 元数据/提示，以及从同一数据源生成可见内容与 `FAQPage` JSON-LD 的可选 FAQ。package 版本仍保持 0.2.1，等待独立 release PR；自动重定向仍未实现。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 

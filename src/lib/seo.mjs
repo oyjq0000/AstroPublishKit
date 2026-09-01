@@ -9,3 +9,15 @@ export function structuredDataGraph(items) {
     }),
   };
 }
+
+export function faqPageJsonLd(items) {
+  if (!Array.isArray(items) || items.length === 0) return undefined;
+  return {
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+}

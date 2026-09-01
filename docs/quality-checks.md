@@ -27,7 +27,7 @@ A blocking failure exits non-zero and should stop a release. Editorial warnings 
 
 ## `typecheck`
 
-Runs Astro's TypeScript diagnostics across Astro, TypeScript and content-driven routes.
+Runs Astro's TypeScript diagnostics across Astro, TypeScript and content-driven routes. Content Collection validation also enforces that an optional `faq` is a non-empty array of non-empty plain-text `question` / `answer` pairs.
 
 ## `lint`
 
@@ -51,6 +51,7 @@ Runs the Node test suite. The suite covers:
 - Previous / Next same-category eligibility, chronology, boundary behavior, deterministic equal-date ordering and input immutability;
 - taxonomy slug behavior, including Unicode and collisions;
 - JSON-LD graph assembly and SEO URL invariants;
+- FAQPage mapping, empty omission and source immutability;
 - authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
 - `new-post` default draft behavior, optional summary serialization and duplicate-file protection using synthetic temporary projects;
 - optional Summary / Quick Answer length validation;
@@ -151,7 +152,7 @@ Scans for common secret patterns and accidental environment-file commits. It rem
 
 ## `check:template`
 
-Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior. Separate freshness fixtures verify visible `Updated` metadata with the expected `<time datetime>` value and a reader-facing notice for a deliberately old article.
+Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior. Separate freshness fixtures verify visible `Updated` metadata with the expected `<time datetime>` value and a reader-facing notice for a deliberately old article. An FAQ fixture verifies that visible questions/answers and `FAQPage` structured data contain the same pairs, while a normal article without `faq` emits neither FAQ output.
 
 This is part of `npm run check`, so CI does not need a separate template step.
 

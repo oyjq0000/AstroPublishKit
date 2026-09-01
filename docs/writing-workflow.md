@@ -55,6 +55,9 @@ Common optional fields are:
 
 ```yaml
 summary: "A concise direct answer shown near the top of the article."
+faq:
+  - question: "Does this FAQ need JavaScript?"
+    answer: "No. It is rendered from frontmatter during the static build."
 lastModified: 2026-09-03
 author: "Your Name"
 cover:
@@ -62,7 +65,7 @@ cover:
   alt: "Diagram showing the publishing workflow"
 ```
 
-Use `YYYY-MM-DD` for `date` and `lastModified`. `summary` is optional plain text for the visible Quick Answer block and should not simply duplicate `description`. See [Content authoring](content.md) for the complete field semantics.
+Use `YYYY-MM-DD` for `date` and `lastModified`. `summary` is optional plain text for the visible Quick Answer block and should not simply duplicate `description`. `faq` is an optional list of plain-text question/answer pairs; the same items drive both the visible FAQ and `FAQPage` JSON-LD. See [Content authoring](content.md) for the complete field semantics.
 
 There is no Related Posts frontmatter field. Keep `category` and `tags` truthful and consistent: article recommendations are generated automatically at build time from exact shared labels, without manual related-post IDs.
 
