@@ -6,6 +6,8 @@ import {
   POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH,
   frontmatterList,
   frontmatterScalar,
+  isPortableImageSource,
+  markdownImages,
 } from "../src/lib/content-rules.mjs";
 import { slugify } from "../src/lib/text.mjs";
 import { taxonomySlugCollisions } from "../src/lib/taxonomy.mjs";
@@ -152,9 +154,18 @@ for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
       "Remove the body H1.",
     );
   }
-  for (const image of cleanBody.matchAll(/!\[([^\]]*)\]\([^)]+\)/g)) {
-    if (!image[1].trim()) {
+  const reportedImageSources = new Set();
+  for (const image of markdownImages(cleanBody)) {
+    if (!image.alt.trim()) {
       addError(relative, "A Markdown image has empty alt text.", "Describe the image between the square brackets.");
+    }
+    if (image.src && !isPortableImageSource(image.src) && !reportedImageSources.has(image.src)) {
+      reportedImageSources.add(image.src);
+      addError(
+        relative,
+        `Image source uses a non-portable URI: ${image.src}`,
+        "Copy the image into public/ or use a valid HTTP(S) image URL.",
+      );
     }
   }
 

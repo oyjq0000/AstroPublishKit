@@ -50,7 +50,8 @@ Runs the Node test suite. The suite covers:
 - taxonomy slug behavior, including Unicode and collisions;
 - JSON-LD graph assembly and SEO URL invariants;
 - authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
-- `new-post` default draft behavior and duplicate-file protection using synthetic temporary projects.
+- `new-post` default draft behavior and duplicate-file protection using synthetic temporary projects;
+- Markdown image parsing and URI portability, including CLI exit behavior for synthetic `.md` / `.mdx` fixtures.
 
 Tests use synthetic fixtures rather than private production posts and do not require network or Cloudflare access.
 
@@ -77,9 +78,12 @@ Blocking content errors include:
 - missing required frontmatter keys;
 - a body H1 when the page template already renders the title as H1;
 - Markdown images with empty alt text;
+- Markdown image sources that use clear local filesystem paths or non-Web URI schemes;
 - taxonomy values that normalize to an empty or colliding slug;
 - malformed root-relative internal links;
 - internal page links that violate the trailing-slash convention.
+
+Image URI portability is deterministic and blocking rather than editorial: `http://`, `https://`, site-root and relative paths are accepted, while `file://`, Windows absolute paths, known machine-local POSIX roots and other URI schemes such as `en-resource://` are errors. Exact duplicate bad image sources are reported once per file to keep diagnostics useful.
 
 Non-blocking warnings include:
 

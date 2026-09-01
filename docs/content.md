@@ -123,6 +123,20 @@ The `public/images/posts/<slug>/` structure is a convention only; it is not requ
 
 `alt` is required whenever `cover` is present and must be non-empty. The cover is displayed at the top of the article, used as the article Open Graph/Twitter image, and included in Article structured data. If no cover is set, the layout falls back to `site.brand.defaultOgImage`; the starter default is the 1200×630 `public/og.png` asset.
 
+## Body images
+
+Use standard Markdown image syntax in both Markdown and MDX body content:
+
+```md
+![Diagram showing the build flow](/images/posts/my-post/flow.webp)
+```
+
+Astro supports public-root image URLs, remote URLs and content-relative local images in Markdown. For local files under `src/`, resolve them relative to the Markdown/MDX file; for files under `public/`, use a root-relative URL without the `public` prefix.
+
+`npm run check:content` also checks standard Markdown `![alt](src)` destinations for portability. It accepts normal Web URLs (`http://` and `https://`) plus site-root and relative URLs such as `/images/...`, `./image.webp` and `../images/image.webp`. It blocks clear machine-local paths (`file://`, Windows drive/UNC paths, `/Users/...`, `/home/...` and other common local filesystem roots) and non-Web/custom URI schemes such as `en-resource://` or `custom-protocol://`.
+
+The portability check is intentionally narrow: it does not prove that a referenced public or remote asset exists, and custom HTML/MDX image components need their own review.
+
 ## Taxonomy safety
 
 `npm run check:content` rejects empty taxonomy slugs and collisions such as two different labels normalizing to the same URL slug. Rename one of the conflicting labels rather than relying on ambiguous routes.
