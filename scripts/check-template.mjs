@@ -68,6 +68,33 @@ tags: ["Navigation"]
 Synthetic navigation regression content.
 `,
   );
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/freshness-updated.md"),
+    `---
+title: "Freshness updated fixture"
+description: "A synthetic article used to verify visible updated metadata in generated article HTML."
+date: 2025-01-01
+lastModified: 2026-01-01
+category: "Freshness"
+tags: ["Freshness"]
+---
+
+Synthetic freshness regression content.
+`,
+  );
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/freshness-stale.md"),
+    `---
+title: "Freshness stale fixture"
+description: "A deliberately old synthetic article used to verify the reader-facing freshness notice."
+date: 2020-01-01
+category: "Freshness"
+tags: ["Freshness"]
+---
+
+Synthetic stale-content regression content.
+`,
+  );
   run(["run", "build:production"], { SITE_URL: fakeSiteUrl });
 
   const dist = path.join(temp, "dist");
@@ -148,6 +175,24 @@ Synthetic navigation regression content.
     if (!expectation.nextHref && navigation.includes("data-post-navigation-next")) {
       errors.push(`${expectation.page} unexpectedly renders a next article link`);
     }
+  }
+
+  const updatedArticleFile = path.join(dist, "posts/freshness-updated/index.html");
+  const updatedArticleHtml = fs.readFileSync(updatedArticleFile, "utf8");
+  if (!updatedArticleHtml.includes("Updated")) {
+    errors.push("posts/freshness-updated/index.html is missing visible Updated metadata");
+  }
+  if (!updatedArticleHtml.includes('datetime="2026-01-01T00:00:00.000Z"')) {
+    errors.push("posts/freshness-updated/index.html is missing the lastModified time datetime value");
+  }
+
+  const staleArticleFile = path.join(dist, "posts/freshness-stale/index.html");
+  const staleArticleHtml = fs.readFileSync(staleArticleFile, "utf8");
+  if (!staleArticleHtml.includes('aria-label="Content freshness"')) {
+    errors.push("posts/freshness-stale/index.html is missing the freshness notice");
+  }
+  if (!staleArticleHtml.includes("Some details may have changed.")) {
+    errors.push("posts/freshness-stale/index.html is missing the freshness notice copy");
   }
 
   if (errors.length) {

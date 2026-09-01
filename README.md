@@ -107,6 +107,7 @@ Migrating an existing site? See **[Existing blog → AstroPublishKit migration c
 - optional per-article Summary / Quick Answer block
 - deterministic build-time Related Posts from exact shared tags and category
 - deterministic same-category Previous / Next article navigation
+- static article freshness: visible `Updated` metadata plus a low-prominence notice after 365 days
 - Pagefind static search
 - table of contents, sharing and back-to-top
 - Callout, Accordion and YouTube MDX primitives
@@ -175,6 +176,7 @@ A few semantics are worth making explicit:
 - `summary` is optional plain text for a visible Quick Answer block; it is separate from `description`, which still serves metadata and listings.
 - Related Posts require no extra frontmatter: discoverable published posts are ranked from exact shared tags and category at build time, with no backend, AI recommendation service or manual related-post IDs.
 - Previous / Next also requires no extra frontmatter: discoverable posts in the same exact category form a deterministic publication timeline, where Previous is older and Next is newer.
+- `lastModified` remains the only update field. When it is later than `date`, the article shows visible `Updated` metadata; freshness uses `lastModified || date`, and an effective date at least 365 days old receives a lightweight reader notice. The behavior is build-time only, with no backend or runtime freshness service.
 - `author` is optional. When omitted, the site-level author is used; when set, it overrides the author for that post.
 - `lang` is article metadata only in v0.2.0. It does **not** enable multilingual routing, translated UI, fallback behavior, or hreflang.
 - `draft: true` is previewable by direct URL only during `npm run dev`; production output does not generate the page.
@@ -289,7 +291,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-Current `main` builds toward v0.3.0 with optional Summary / Quick Answer, deterministic Related Posts and same-category Previous / Next navigation. Freshness, FAQ and redirect automation are still not included.
+Current `main` builds toward v0.3.0 with optional Summary / Quick Answer, deterministic Related Posts, same-category Previous / Next navigation and static article freshness metadata/notices. FAQ and redirect automation are still not included.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 

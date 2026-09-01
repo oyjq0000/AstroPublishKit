@@ -6,6 +6,7 @@ import {
   POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH,
   POST_SUMMARY_MAX_LENGTH,
   POST_SUMMARY_MIN_LENGTH,
+  POST_STALE_AFTER_DAYS,
   frontmatterList,
   frontmatterScalar,
   isPortableImageSource,
@@ -19,7 +20,6 @@ const errors = [];
 const warnings = [];
 const tagEntries = [];
 const categoryEntries = [];
-const staleAfterDays = 365;
 let checkedPosts = 0;
 
 function walk(dir) {
@@ -192,13 +192,29 @@ for (const file of walk(root).filter((file) => /\.(md|mdx)$/.test(file))) {
     );
   }
 
-  const date = new Date(frontmatterScalar(frontmatter, "lastModified") || frontmatterScalar(frontmatter, "date"));
-  if (Number.isFinite(date.valueOf())) {
-    const ageDays = (Date.now() - date.valueOf()) / 86_400_000;
-    if (ageDays > staleAfterDays) {
+  const publishedDate = new Date(frontmatterScalar(frontmatter, "date"));
+  const lastModifiedValue = frontmatterScalar(frontmatter, "lastModified");
+  const lastModifiedDate = lastModifiedValue ? new Date(lastModifiedValue) : undefined;
+  if (
+    lastModifiedDate &&
+    Number.isFinite(lastModifiedDate.valueOf()) &&
+    Number.isFinite(publishedDate.valueOf()) &&
+    lastModifiedDate.valueOf() < publishedDate.valueOf()
+  ) {
+    addError(
+      relative,
+      "lastModified must not be earlier than date.",
+      "Remove lastModified or set it to the publication date or a later meaningful revision date.",
+    );
+  }
+
+  const freshnessDate = lastModifiedDate || publishedDate;
+  if (Number.isFinite(freshnessDate.valueOf())) {
+    const ageDays = (Date.now() - freshnessDate.valueOf()) / 86_400_000;
+    if (ageDays >= POST_STALE_AFTER_DAYS) {
       addWarning(
         relative,
-        `Content has not been updated in more than ${staleAfterDays} days.`,
+        `Content has not been updated in at least ${POST_STALE_AFTER_DAYS} days.`,
         "Review the article and update lastModified after a meaningful revision.",
       );
     }

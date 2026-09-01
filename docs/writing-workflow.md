@@ -68,6 +68,8 @@ There is no Related Posts frontmatter field. Keep `category` and `tags` truthful
 
 Previous / Next navigation also needs no authoring field. Published discoverable posts with the same exact `category` are connected automatically by publication date.
 
+Freshness also adds no field: keep using `lastModified` only after a meaningful revision, and never set it earlier than `date`. A later day becomes visible **Updated** metadata; `lastModified || date` also drives the static 365-day reader notice. No backend or runtime freshness service is required.
+
 ## 3. Write Markdown or MDX
 
 Use `.md` for normal Markdown. Nothing about the MDX component layer is required for Markdown posts.

@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   adjacentPostsFor,
+  effectivePostDate,
   filterPostsByCategory,
   filterPostsByTag,
+  freshnessFor,
   isDiscoverablePost,
   isPreviewablePost,
   isPublishedPost,
@@ -16,6 +18,7 @@ function post(id, date, options = {}) {
     id,
     data: {
       date: new Date(date),
+      lastModified: options.lastModified ? new Date(options.lastModified) : undefined,
       category: options.category ?? "General",
       tags: options.tags ?? [],
       draft: options.draft ?? false,
@@ -48,6 +51,59 @@ test("posts sort newest first without mutating the input", () => {
     posts.map((item) => item.id),
     ["old", "new"],
   );
+});
+
+test("effective post date prefers lastModified and otherwise uses the publication date", () => {
+  assert.equal(effectivePostDate(post("published", "2026-01-01")).toISOString(), "2026-01-01T00:00:00.000Z");
+  assert.equal(
+    effectivePostDate(post("modified", "2026-01-01", { lastModified: "2026-02-01" })).toISOString(),
+    "2026-02-01T00:00:00.000Z",
+  );
+});
+
+test("freshness shows Updated only when lastModified is on a later calendar day", () => {
+  const now = new Date("2026-06-01T00:00:00.000Z");
+  const sameDay = post("same-day", "2026-01-01T00:00:00.000Z", {
+    lastModified: "2026-01-01T18:00:00.000Z",
+  });
+  const laterDay = post("later-day", "2026-01-01T00:00:00.000Z", { lastModified: "2026-01-02T00:00:00.000Z" });
+
+  assert.equal(freshnessFor(sameDay, now).updatedDate, undefined);
+  assert.equal(freshnessFor(laterDay, now).updatedDate?.toISOString(), "2026-01-02T00:00:00.000Z");
+});
+
+test("freshness stale threshold is deterministic at 364, 365 and more than 365 days", () => {
+  const day = 86_400_000;
+  const now = new Date("2026-01-01T00:00:00.000Z");
+  const agedPost = (days) => post(`age-${days}`, new Date(now.valueOf() - days * day));
+
+  assert.equal(freshnessFor(agedPost(364), now).isStale, false);
+  assert.equal(freshnessFor(agedPost(365), now).isStale, true);
+  assert.equal(freshnessFor(agedPost(366), now).isStale, true);
+});
+
+test("future effective dates do not produce stale content", () => {
+  const now = new Date("2026-01-01T00:00:00.000Z");
+  const future = post("future", "2026-01-02T00:00:00.000Z");
+  const futureModified = post("future-modified", "2025-01-01T00:00:00.000Z", {
+    lastModified: "2026-01-02T00:00:00.000Z",
+  });
+
+  assert.equal(freshnessFor(future, now).isStale, false);
+  assert.equal(freshnessFor(futureModified, now).isStale, false);
+});
+
+test("freshness uses the explicit now value and does not mutate the post", () => {
+  const candidate = post("immutable", "2025-01-01T00:00:00.000Z", { lastModified: "2025-06-01T00:00:00.000Z" });
+  const originalDate = candidate.data.date;
+  const originalLastModified = candidate.data.lastModified;
+  const first = freshnessFor(candidate, new Date("2026-05-31T00:00:00.000Z"));
+  const second = freshnessFor(candidate, new Date("2026-06-01T00:00:00.000Z"));
+
+  assert.equal(first.isStale, false);
+  assert.equal(second.isStale, true);
+  assert.equal(candidate.data.date, originalDate);
+  assert.equal(candidate.data.lastModified, originalLastModified);
 });
 
 test("category and tag filters use exact labels", () => {

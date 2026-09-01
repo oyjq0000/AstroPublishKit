@@ -54,7 +54,7 @@ Status legend:
 | FAQ + FAQPage JSON-LD                    | ⏳ Planned      | v0.3.0+                | Visible FAQ and structured data should share one source.                                           |
 | Gallery + lightbox                       | ⏳ Planned      | v0.3.0+                | Not part of v0.2.0.                                                                                |
 | Reading progress                         | ⏳ Planned      | v0.3.0+                | Candidate progressive enhancement.                                                                 |
-| Last updated / freshness notice          | ⏳ Planned      | v0.3.0+                | Candidate generic configurable freshness behavior.                                                 |
+| Last updated / freshness notice          | ✅ Implemented  | v0.3.0                 | Existing `lastModified` drives visible Updated metadata and a deterministic 365-day static notice. |
 | Full i18n routing / fallback / hreflang  | ⏳ Planned      | v0.3.0+                | Current `lang` remains metadata only.                                                              |
 | Dynamic OG image generation              | ⏳ Planned      | v0.3.0+                | Current static default OG asset remains the supported path.                                        |
 | AdSense integration                      | ⏳ Planned      | v0.3.0+                | Optional integration candidate, not default core UI.                                               |
@@ -88,7 +88,7 @@ Targeted hardening from real migration validation: portable Markdown image-sourc
 
 ### v0.3.0+
 
-Current v0.3.0 development includes the optional Summary / Quick Answer block, deterministic static Related Posts and same-category Previous / Next navigation. Remaining candidates include FAQ/freshness helpers, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
+Current v0.3.0 development includes the optional Summary / Quick Answer block, deterministic static Related Posts, same-category Previous / Next navigation and build-time article freshness metadata/notices. Remaining candidates include FAQ, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
 
 ## Product boundary
 

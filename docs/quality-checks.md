@@ -80,6 +80,7 @@ Blocking content errors include:
 
 - missing required frontmatter keys;
 - an optional `summary` outside the supported 20–500 character range;
+- `lastModified` earlier than the publication `date`;
 - a body H1 when the page template already renders the title as H1;
 - Markdown images with empty alt text;
 - Markdown image sources that use clear local filesystem paths or non-Web URI schemes;
@@ -93,7 +94,7 @@ Non-blocking warnings include:
 
 - heading-level jumps;
 - no root-relative internal page links in an article;
-- content that has not been updated for more than the configured stale threshold;
+- content whose effective update date has reached the shared 365-day stale threshold;
 - descriptions outside the recommended editorial length range.
 
 Diagnostics are author-facing and grouped by severity and file. A typical item looks like:
@@ -150,7 +151,7 @@ Scans for common secret patterns and accidental environment-file commits. It rem
 
 ## `check:template`
 
-Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior.
+Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior. Separate freshness fixtures verify visible `Updated` metadata with the expected `<time datetime>` value and a reader-facing notice for a deliberately old article.
 
 This is part of `npm run check`, so CI does not need a separate template step.
 
