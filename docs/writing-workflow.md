@@ -66,6 +66,8 @@ Use `YYYY-MM-DD` for `date` and `lastModified`. `summary` is optional plain text
 
 There is no Related Posts frontmatter field. Keep `category` and `tags` truthful and consistent: article recommendations are generated automatically at build time from exact shared labels, without manual related-post IDs.
 
+Previous / Next navigation also needs no authoring field. Published discoverable posts with the same exact `category` are connected automatically by publication date.
+
 ## 3. Write Markdown or MDX
 
 Use `.md` for normal Markdown. Nothing about the MDX component layer is required for Markdown posts.

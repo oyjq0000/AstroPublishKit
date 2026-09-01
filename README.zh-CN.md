@@ -106,6 +106,7 @@ SITE_URL=https://your-domain.example npm run build:production
 - 文章、分类、标签、归档、阅读时长和文章元数据
 - 可选的文章 Summary / Quick Answer 摘要块
 - 基于精确共享标签与分类、在构建阶段生成的确定性 Related Posts
+- 同一精确分类内、按发布时间确定的 Previous / Next 文章导航
 - Pagefind 静态搜索
 - TOC、分享、返回顶部
 - Callout、Accordion、YouTube MDX 组件
@@ -173,6 +174,7 @@ lang: "en"
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
 - `summary` 是可选纯文本，用于页面可见的 Quick Answer；它和继续服务 metadata / 列表的 `description` 是两个不同字段。
 - Related Posts 不需要额外 Frontmatter：构建时只从可发现的已发布文章中，按精确共享 `tags` 与 `category` 自动排序；不需要后端、AI 推荐服务或手工 related-post ID。
+- Previous / Next 同样不需要额外 Frontmatter：同一精确 `category` 中的可发现文章按发布时间形成确定性时间线，Previous 指更旧一篇，Next 指更新一篇。
 - `author` 可选。不填时继承站点作者；填写时仅覆盖当前文章作者。
 - v0.2.0 中 `lang` 仍然只是文章元数据，**不会**开启多语言路由、UI 翻译、fallback 或 hreflang。
 - `draft: true` 只会在 `npm run dev` 时允许通过直接 URL 预览；production output 不生成该页面。
@@ -287,7 +289,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-当前 `main` 正在向 v0.3.0 开发，已经包含可选 Summary / Quick Answer 与确定性的 Related Posts；Previous / Next、Freshness、FAQ 和自动重定向仍未实现。
+当前 `main` 正在向 v0.3.0 开发，已经包含可选 Summary / Quick Answer、确定性的 Related Posts，以及同分类 Previous / Next 导航；Freshness、FAQ 和自动重定向仍未实现。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 

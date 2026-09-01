@@ -85,6 +85,12 @@ Article pages automatically render up to three related, discoverable published p
 
 Related Posts add no authoring field or manual relation IDs. They are computed during the static build and rendered as normal article links, with no backend, client fetch or AI recommendation service. If no related post qualifies, the block is omitted entirely rather than falling back to recent posts.
 
+## Previous / Next navigation
+
+Published discoverable article pages also receive deterministic Previous / Next navigation within the same exact category label. Posts are ordered by publication date descending, with stable post ID ordering for equal dates. **Previous article** points to the immediately older post; **Next article** points to the immediately newer post.
+
+Draft and `noindex` posts do not participate in the timeline, categories are not normalized or mixed, and category boundaries render only the side that exists. No additional frontmatter or manual navigation IDs are required.
+
 ## Draft preview and publishing
 
 Keep a work-in-progress article as:

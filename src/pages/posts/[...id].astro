@@ -2,12 +2,13 @@
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BackToTop from "../../components/BackToTop.astro";
 import Giscus from "../../components/Giscus.astro";
+import PostNavigation from "../../components/PostNavigation.astro";
 import QuickAnswer from "../../components/QuickAnswer.astro";
 import RelatedPosts from "../../components/RelatedPosts.astro";
 import Share from "../../components/Share.astro";
 import Toc from "../../components/Toc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { isPreviewablePost, relatedPostsFor } from "../../lib/posts.mjs";
+import { adjacentPostsFor, isPreviewablePost, relatedPostsFor } from "../../lib/posts.mjs";
 import { estimateReadingMinutes, slugify } from "../../lib/text.mjs";
 import { absolutePageUrl, withTrailingSlash } from "../../lib/urls.mjs";
 import kit from "../../../astro-publish-kit.config.mjs";
@@ -16,15 +17,16 @@ export async function getStaticPaths() {
   const posts = await getCollection("posts", (post) => isPreviewablePost(post, import.meta.env.DEV));
   return posts.map((post) => ({
     params: { id: post.id },
-    props: { post, relatedPosts: relatedPostsFor(post, posts) },
+    props: { post, adjacentPosts: adjacentPostsFor(post, posts), relatedPosts: relatedPostsFor(post, posts) },
   }));
 }
 
 interface Props {
   post: CollectionEntry<"posts">;
+  adjacentPosts: { previous?: CollectionEntry<"posts">; next?: CollectionEntry<"posts"> };
   relatedPosts: CollectionEntry<"posts">[];
 }
-const { post, relatedPosts } = Astro.props;
+const { post, adjacentPosts, relatedPosts } = Astro.props;
 const { Content, headings } = await render(post);
 const minutes = estimateReadingMinutes(post.body ?? "");
 const author = post.data.author || kit.site.author.name;
@@ -102,6 +104,7 @@ const breadcrumbLd = {
       </ul>
       <Share title={post.data.title} />
     </footer>
+    <PostNavigation previous={adjacentPosts.previous} next={adjacentPosts.next} />
     <RelatedPosts posts={relatedPosts} />
     <Giscus />
   </article>

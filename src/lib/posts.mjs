@@ -43,3 +43,20 @@ export function relatedPostsFor(post, posts, limit = 3) {
     .slice(0, maxResults)
     .map((candidate) => candidate.post);
 }
+
+export function adjacentPostsFor(post, posts) {
+  const ordered = posts
+    .filter((candidate) => candidate.data.category === post.data.category && isDiscoverablePost(candidate))
+    .sort((a, b) => {
+      const dateDifference = new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
+      if (dateDifference !== 0) return dateDifference;
+      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    });
+  const currentIndex = ordered.findIndex((candidate) => candidate.id === post.id);
+  if (currentIndex === -1) return { previous: undefined, next: undefined };
+
+  return {
+    previous: ordered[currentIndex + 1],
+    next: ordered[currentIndex - 1],
+  };
+}
