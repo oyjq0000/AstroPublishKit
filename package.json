@@ -1,6 +1,6 @@
 {
   "name": "astro-publish-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "A clean, static-first Astro publishing starter with SEO, search, quality gates, and Cloudflare deployment.",
