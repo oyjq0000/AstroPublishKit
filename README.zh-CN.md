@@ -282,7 +282,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-v0.2.0 只改善本地发布体验，不加入 i18n 路由、Mermaid、LaTeX、Dynamic OG、Gallery / Lightbox、多作者系统、CMS / Admin / Database / Auth、AI 写作、广告系统或重型 Theme 配置系统。
+v0.2.1 在现有本地发布流程上加入真实内容迁移加固，但不加入自动重定向、URL 保留迁移，也不加入 Summary / Quick Answer、Related Posts、Previous / Next 等新的文章 UI 功能。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 

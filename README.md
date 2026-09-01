@@ -282,7 +282,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-v0.2.0 improves the local publishing experience without adding i18n routing, Mermaid, LaTeX, dynamic OG generation, gallery/lightbox, a multi-author system, CMS/admin/database/auth features, AI writing, ads, or a heavy theme configuration framework.
+v0.2.1 adds real-world content hardening on top of the local publishing workflow without adding redirect automation, URL-preserving migration, or new article UI features such as Summary / Quick Answer, Related Posts, or Previous / Next.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 
