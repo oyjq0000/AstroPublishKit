@@ -10,6 +10,10 @@ export function structuredDataGraph(items) {
   };
 }
 
+export function serializeJsonLdForHtml(data) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export function faqPageJsonLd(items) {
   if (!Array.isArray(items) || items.length === 0) return undefined;
   return {

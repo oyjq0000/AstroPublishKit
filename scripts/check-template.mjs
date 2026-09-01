@@ -2,11 +2,13 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = process.cwd();
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "astro-publish-kit-template-"));
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const fakeSiteUrl = "https://template-smoke.test";
+const injectedFaqValue = '</script><script id="apk-validation-injected">injected</script>';
 
 const fakeConfig = `const configuredUrl = process.env.SITE_URL || "https://local.invalid";\n\nexport default {\n  site: {\n    title: "Template Smoke Site",\n    shortTitle: "Smoke Site",\n    description: "A fake site identity used by the template regression check.",\n    url: configuredUrl.replace(/\\/+$/, ""),\n    language: "en",\n    locale: "en_US",\n    author: { name: "Template Author", url: "https://example.org/author" },\n    repository: "https://example.org/repository",\n    brand: { mark: "T", favicon: "/favicon.svg", defaultOgImage: "/og.png" },\n    copyright: "Template Author"\n  },\n  navigation: [\n    { label: "Posts", href: "/posts/" },\n    { label: "Tags", href: "/tags/" },\n    { label: "Archive", href: "/archive/" },\n    { label: "Search", href: "/search/" },\n    { label: "About", href: "/about/" }\n  ],\n  social: [{ label: "Profile", href: "https://example.org/profile" }],\n  home: {\n    eyebrow: "Template smoke test",\n    heading: "A clean user-owned site identity.",\n    intro: "This copy verifies that runtime identity comes from the main configuration file.",\n    primaryAction: { label: "Read posts", href: "/posts/" },\n    secondaryAction: { label: "Profile", href: "https://example.org/profile" }\n  }\n};\n`;
 
@@ -30,6 +32,42 @@ function walk(target) {
   const stat = fs.statSync(target);
   if (stat.isFile()) return [target];
   return fs.readdirSync(target, { withFileTypes: true }).flatMap((entry) => walk(path.join(target, entry.name)));
+}
+
+async function searchPagefind(dist, queries) {
+  const nativeFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    const url = input instanceof URL ? new URL(input) : new URL(typeof input === "string" ? input : input.url);
+    if (url.protocol !== "file:") return nativeFetch(input, init);
+    url.search = "";
+    try {
+      return new Response(await fs.promises.readFile(fileURLToPath(url)), { status: 200 });
+    } catch (error) {
+      if (error?.code === "ENOENT") return new Response("Not found", { status: 404 });
+      throw error;
+    }
+  };
+
+  let pagefind;
+  try {
+    const bundle = pathToFileURL(path.join(dist, "pagefind/pagefind.js")).href;
+    pagefind = await import(`${bundle}?template-regression=${Date.now()}`);
+    await pagefind.options({ baseUrl: fakeSiteUrl });
+    const results = new Map();
+    for (const query of queries) {
+      const search = await pagefind.search(query);
+      const urls = [];
+      for (const hit of search.results) {
+        const data = await hit.data();
+        urls.push(data.raw_url ?? new URL(data.url).pathname);
+      }
+      results.set(query, urls);
+    }
+    return results;
+  } finally {
+    if (pagefind) await pagefind.destroy();
+    globalThis.fetch = nativeFetch;
+  }
 }
 
 try {
@@ -101,6 +139,52 @@ Synthetic FAQ regression content.
 `,
   );
   fs.writeFileSync(
+    path.join(temp, "src/content/posts/faq-injection.md"),
+    `---
+title: "FAQ injection fixture"
+description: "A synthetic article used to verify JSON-LD script-boundary safety without changing reader-visible FAQ values."
+date: 2026-08-26
+category: "FAQ"
+tags: ["FAQ"]
+faq:
+  - question: "Can structured data safely preserve an HTML-looking answer?"
+    answer: '${injectedFaqValue}'
+---
+
+Synthetic JSON-LD security regression content.
+`,
+  );
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/search-boundary-source.md"),
+    `---
+title: "Search boundary source fixture"
+description: "A synthetic source article used to verify Pagefind boundaries around article-to-article recommendation UI."
+summary: "quickanswermeteorite appears only in this source article's visible Quick Answer block."
+date: 2026-08-28
+category: "Search Boundary"
+tags: ["Search Boundary"]
+faq:
+  - question: "Where is faqcobaltorchid documented?"
+    answer: "faqansweramberlily appears only in this source article's visible FAQ."
+---
+
+bodynarwhalquartz appears only in this source article body.
+`,
+  );
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/search-boundary-target.md"),
+    `---
+title: "Zephyrquasarnautilus target fixture"
+description: "A synthetic target article whose globally unique title token verifies Pagefind cross-article indexing boundaries."
+date: 2026-08-29
+category: "Search Boundary"
+tags: ["Search Boundary"]
+---
+
+This synthetic target body contains no source-article search needles.
+`,
+  );
+  fs.writeFileSync(
     path.join(temp, "src/content/posts/freshness-stale.md"),
     `---
 title: "Freshness stale fixture"
@@ -113,7 +197,13 @@ tags: ["Freshness"]
 Synthetic stale-content regression content.
 `,
   );
-  run(["run", "build:production"], { SITE_URL: fakeSiteUrl });
+  run(["run", "build:production"], {
+    SITE_URL: fakeSiteUrl,
+    PUBLIC_GISCUS_REPO: "example/repository",
+    PUBLIC_GISCUS_REPO_ID: "R_template_regression",
+    PUBLIC_GISCUS_CATEGORY: "General",
+    PUBLIC_GISCUS_CATEGORY_ID: "DIC_template_regression",
+  });
 
   const dist = path.join(temp, "dist");
   const textFiles = walk(dist).filter((file) => /\.(?:html?|xml|txt|json|svg|css)$/i.test(file));
@@ -144,6 +234,9 @@ Synthetic stale-content regression content.
     }
     if (!relatedSection.includes("Related posts")) {
       errors.push(`posts/${currentId}/index.html is missing the Related posts heading`);
+    }
+    if (!relatedSection.includes("data-pagefind-ignore")) {
+      errors.push(`posts/${currentId}/index.html Related posts is missing data-pagefind-ignore`);
     }
     if (!relatedSection.includes(`/posts/${relatedId}/`)) {
       errors.push(`posts/${currentId}/index.html is missing related link /posts/${relatedId}/`);
@@ -177,6 +270,9 @@ Synthetic stale-content regression content.
     if (!navigation) {
       errors.push(`${expectation.page} is missing article navigation`);
       continue;
+    }
+    if (!navigation.includes("data-pagefind-ignore")) {
+      errors.push(`${expectation.page} article navigation is missing data-pagefind-ignore`);
     }
     if (
       expectation.previousHref &&
@@ -223,6 +319,12 @@ Synthetic stale-content regression content.
   } else {
     const faqGraph = JSON.parse(faqJsonText);
     const faqPage = faqGraph["@graph"]?.find((item) => item["@type"] === "FAQPage");
+    const graphTypes = new Set(faqGraph["@graph"]?.map((item) => item["@type"]));
+    for (const expectedType of ["WebSite", "Article", "BreadcrumbList", "FAQPage"]) {
+      if (!graphTypes.has(expectedType)) {
+        errors.push(`posts/faq/index.html is missing ${expectedType} structured data`);
+      }
+    }
     if (!faqPage) {
       errors.push("posts/faq/index.html is missing FAQPage structured data");
     } else {
@@ -244,6 +346,68 @@ Synthetic stale-content regression content.
   const noFaqHtml = fs.readFileSync(path.join(dist, "posts/getting-started/index.html"), "utf8");
   if (noFaqHtml.includes("data-faq") || noFaqHtml.includes('"@type":"FAQPage"')) {
     errors.push("posts/getting-started/index.html unexpectedly renders FAQ content or FAQPage data");
+  }
+
+  const injectionArticleHtml = fs.readFileSync(path.join(dist, "posts/faq-injection/index.html"), "utf8");
+  const injectionVisibleFaq = injectionArticleHtml.match(/<section[^>]*data-faq[^>]*>[\s\S]*?<\/section>/)?.[0];
+  if (!injectionVisibleFaq) {
+    errors.push("posts/faq-injection/index.html is missing the visible FAQ section");
+  } else {
+    if (!injectionVisibleFaq.includes("&lt;/script&gt;")) {
+      errors.push("posts/faq-injection/index.html does not HTML-escape the visible FAQ script boundary");
+    }
+    if (injectionVisibleFaq.includes('<script id="apk-validation-injected">')) {
+      errors.push("posts/faq-injection/index.html renders an injected script element inside the visible FAQ");
+    }
+  }
+  const injectionJsonText = injectionArticleHtml.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  )?.[1];
+  if (!injectionJsonText) {
+    errors.push("posts/faq-injection/index.html is missing structured data");
+  } else {
+    if (injectionJsonText.includes("<")) {
+      errors.push("posts/faq-injection/index.html structured data still contains a literal HTML script boundary");
+    }
+    const injectionGraph = JSON.parse(injectionJsonText);
+    const injectionFaqPage = injectionGraph["@graph"]?.find((item) => item["@type"] === "FAQPage");
+    const recovered = injectionFaqPage?.mainEntity?.[0]?.acceptedAnswer?.text;
+    if (recovered !== injectedFaqValue) {
+      errors.push("posts/faq-injection/index.html structured data does not preserve the original FAQ value");
+    }
+  }
+  const executableInjectedScripts = [...injectionArticleHtml.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].filter(
+    (match) => match[1].trim() === "injected",
+  );
+  if (executableInjectedScripts.length > 0) {
+    errors.push("posts/faq-injection/index.html contains an injected executable script node");
+  }
+
+  const shareRoot = faqArticleHtml.match(/<div[^>]*data-share-root[^>]*>/)?.[0];
+  if (!shareRoot?.includes("data-pagefind-ignore")) {
+    errors.push("posts/faq/index.html share controls are missing data-pagefind-ignore");
+  }
+  const commentsRoot = faqArticleHtml.match(/<section[^>]*class="comments"[^>]*>/)?.[0];
+  if (!commentsRoot?.includes("data-pagefind-ignore")) {
+    errors.push("posts/faq/index.html comments module is missing data-pagefind-ignore");
+  }
+
+  const pagefindQueries = ["zephyrquasarnautilus", "bodynarwhalquartz", "quickanswermeteorite", "faqcobaltorchid"];
+  const pagefindResults = await searchPagefind(dist, pagefindQueries);
+  const sourceUrl = "/posts/search-boundary-source/";
+  const targetUrl = "/posts/search-boundary-target/";
+  const targetResults = pagefindResults.get("zephyrquasarnautilus") ?? [];
+  if (!targetResults.includes(targetUrl)) {
+    errors.push(`Pagefind unique-title query is missing ${targetUrl}: ${JSON.stringify(targetResults)}`);
+  }
+  if (targetResults.includes(sourceUrl)) {
+    errors.push(`Pagefind unique-title query falsely matches ${sourceUrl}: ${JSON.stringify(targetResults)}`);
+  }
+  for (const query of ["bodynarwhalquartz", "quickanswermeteorite", "faqcobaltorchid"]) {
+    const urls = pagefindResults.get(query) ?? [];
+    if (!urls.includes(sourceUrl)) {
+      errors.push(`Pagefind query ${query} is missing ${sourceUrl}: ${JSON.stringify(urls)}`);
+    }
   }
 
   const staleArticleFile = path.join(dist, "posts/freshness-stale/index.html");

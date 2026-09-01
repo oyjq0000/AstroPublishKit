@@ -5,7 +5,7 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<div class="share-row" data-share-root data-title={title}>
+<div class="share-row" data-share-root data-title={title} data-pagefind-ignore>
   <button type="button" data-share>Share</button>
   <a
     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`}

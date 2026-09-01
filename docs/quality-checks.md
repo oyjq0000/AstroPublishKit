@@ -50,8 +50,8 @@ Runs the Node test suite. The suite covers:
 - Related Posts eligibility, exact shared-taxonomy scoring, deterministic date/ID tie-breaks, limits and input immutability;
 - Previous / Next same-category eligibility, chronology, boundary behavior, deterministic equal-date ordering and input immutability;
 - taxonomy slug behavior, including Unicode and collisions;
-- JSON-LD graph assembly and SEO URL invariants;
-- FAQPage mapping, empty omission and source immutability;
+- JSON-LD graph assembly, HTML-safe serialization and SEO URL invariants;
+- FAQPage mapping, empty omission, source immutability and script-boundary round trips;
 - authoring helpers such as post slug normalization, title-to-slug suggestions, tags parsing, Markdown/MDX selection and frontmatter serialization;
 - `new-post` default draft behavior, optional summary serialization and duplicate-file protection using synthetic temporary projects;
 - optional Summary / Quick Answer length validation;
@@ -152,7 +152,7 @@ Scans for common secret patterns and accidental environment-file commits. It rem
 
 ## `check:template`
 
-Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior. Separate freshness fixtures verify visible `Updated` metadata with the expected `<time datetime>` value and a reader-facing notice for a deliberately old article. An FAQ fixture verifies that visible questions/answers and `FAQPage` structured data contain the same pairs, while a normal article without `faq` emits neither FAQ output.
+Copies the starter into a temporary clean template scenario, replaces the identity with a synthetic user, creates content with the non-interactive `new-post` command and runs a production build. The generated output is scanned for identity leakage from the original demo/template. It also asserts that the demo article HTML contains the expected static Related Posts links and that a Related Posts block never links to its own current article. Synthetic published fixtures verify Previous / Next links in generated HTML, including middle and category-boundary behavior. Related Posts, Previous / Next, comments and share controls must render `data-pagefind-ignore`. Separate freshness fixtures verify visible `Updated` metadata with the expected `<time datetime>` value and a reader-facing notice for a deliberately old article. FAQ fixtures verify that normal visible questions/answers and `FAQPage` structured data contain the same pairs, that HTML-looking FAQ text stays escaped for readers, and that JSON-LD script-boundary strings remain parseable without creating an extra script node. A normal article without `faq` emits neither FAQ output. Finally, the check executes the generated Pagefind search bundle directly against synthetic articles: a unique title in article B must not falsely match article A through Related Posts or Previous / Next, while article A's body, Quick Answer and visible FAQ remain searchable.
 
 This is part of `npm run check`, so CI does not need a separate template step.
 
