@@ -18,11 +18,11 @@ Status legend:
 | Categories, tags, archive                | ✅ Implemented  | v0.1.0                 | Generated static routes.                                                                           |
 | Draft support                            | ✅ Implemented  | v0.1.0                 | Draft pages are excluded from production output.                                                   |
 | Per-page `noindex`                       | ✅ Implemented  | v0.1.0                 | Excluded from discovery surfaces and marked `noindex`.                                             |
-| Pagefind static search                   | ✅ Implemented  | v0.1.0                 | Generated after the Astro build.                                                                   |
+| Pagefind static search                   | ✅ Implemented  | v0.1.0                 | Generated after Astro; v0.3.1 excludes cross-article navigation/UI from article-body indexing.     |
 | TOC, share, back-to-top                  | ✅ Implemented  | v0.1.0                 | Lightweight article UI.                                                                            |
 | Callout / Accordion / YouTube            | ✅ Implemented  | v0.1.0                 | Small optional MDX primitives.                                                                     |
 | Canonical + Open Graph + Twitter         | ✅ Implemented  | v0.1.0                 | Uses the configured site origin.                                                                   |
-| Article / Breadcrumb / WebSite JSON-LD   | ✅ Implemented  | v0.1.0                 | Visible page data and metadata share the same sources.                                             |
+| Article / Breadcrumb / WebSite JSON-LD   | ✅ Implemented  | v0.1.0                 | Shared sources; v0.3.1 HTML-safe serialization prevents script-boundary injection.                 |
 | Sitemap + `lastModified`                 | ✅ Implemented  | v0.1.0                 | `draft` / `noindex` behavior is verified by the quality gate.                                      |
 | RSS / robots.txt / llms.txt              | ✅ Implemented  | v0.1.0                 | Static discovery outputs.                                                                          |
 | Giscus                                   | ✅ Implemented  | v0.1.0                 | Optional and off by default.                                                                       |
@@ -51,7 +51,7 @@ Status legend:
 | Quick Answer / Summary                   | ✅ Implemented  | v0.3.0                 | Optional validated `summary` field rendered as a concise reader-facing article block.              |
 | Related posts                            | ✅ Implemented  | v0.3.0                 | Deterministic static ranking from exact shared tags/category; no unrelated recent fallback.        |
 | Previous / next article                  | ✅ Implemented  | v0.3.0                 | Deterministic same-category discoverable timeline by date, with stable ID tie-breaks.              |
-| FAQ + FAQPage JSON-LD                    | ✅ Implemented  | v0.3.0                 | Optional plain-text FAQ renders visible accordions and matching structured data from one source.   |
+| FAQ + FAQPage JSON-LD                    | ✅ Implemented  | v0.3.0                 | Visible FAQ and matching Schema.org data; no Google FAQ rich-result promise.                       |
 | Gallery + lightbox                       | ⏳ Planned      | v0.3.0+                | Not part of v0.2.0.                                                                                |
 | Reading progress                         | ⏳ Planned      | v0.3.0+                | Candidate progressive enhancement.                                                                 |
 | Last updated / freshness notice          | ✅ Implemented  | v0.3.0                 | Existing `lastModified` drives visible Updated metadata and a deterministic 365-day static notice. |
@@ -89,6 +89,10 @@ Targeted hardening from real migration validation: portable Markdown image-sourc
 ### v0.3.0 — Article Experience
 
 Reader-facing article improvements without a backend: optional Summary / Quick Answer, deterministic static Related Posts, same-category Previous / Next navigation, build-time freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. Remaining candidates stay outside this release, including reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
+
+### v0.3.1 — Search and structured-data hardening
+
+Production-validation hardening only: JSON-LD is serialized safely for an HTML `<script>` boundary, and Pagefind keeps article-owned content searchable while excluding Related Posts, Previous / Next, comments and share controls from the current article's index body. No backend, recommendation service or production-site configuration is added.
 
 ## Product boundary
 

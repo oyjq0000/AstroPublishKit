@@ -175,7 +175,7 @@ lang: "en"
 
 - `category` 是一个宽泛栏目；`tags` 是零个或多个更具体主题。
 - `summary` 是可选纯文本，用于页面可见的 Quick Answer；它和继续服务 metadata / 列表的 `description` 是两个不同字段。
-- `faq` 是可选且非空的纯文本 `question` / `answer` 列表。同一组数据在构建时同时生成页面可见 FAQ 与 `FAQPage` JSON-LD；未设置时两者都不会输出。
+- `faq` 是可选且非空的纯文本 `question` / `answer` 列表。同一组数据在构建时同时生成页面可见 FAQ 与 `FAQPage` JSON-LD；未设置时两者都不会输出。这是 Schema.org 语义标记，不代表 Google 会提供 FAQ 富结果。
 - Related Posts 不需要额外 Frontmatter：构建时只从可发现的已发布文章中，按精确共享 `tags` 与 `category` 自动排序；不需要后端、AI 推荐服务或手工 related-post ID。
 - Previous / Next 同样不需要额外 Frontmatter：同一精确 `category` 中的可发现文章按发布时间形成确定性时间线，Previous 指更旧一篇，Next 指更新一篇。
 - `lastModified` 继续作为唯一的更新时间字段。当它晚于 `date` 时，文章会显示可见的 `Updated` 元数据；Freshness 使用 `lastModified || date`，有效日期达到 365 天时显示轻量读者提示。全部逻辑在构建阶段完成，不需要后端或运行时 Freshness 服务。
@@ -190,7 +190,9 @@ lang: "en"
 
 ### Pagefind 与预览
 
-Pagefind 索引由 `npm run build` 生成。`npm run dev` 适合快速写作预览；完整静态搜索索引应使用：
+Pagefind 索引由 `npm run build` 生成。文章标题、description、正文、Quick Answer 和读者可见 FAQ 会参与搜索；Related Posts、Previous / Next、评论模块与分享控件通过 `data-pagefind-ignore` 排除，避免其他文章标题或纯 UI 文本造成假命中。
+
+`npm run dev` 适合快速写作预览；完整静态搜索索引应使用：
 
 ```bash
 npm run build
@@ -293,9 +295,9 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-v0.3.0 已发布计划中的文章体验功能：可选 Summary / Quick Answer、确定性的 Related Posts、同分类 Previous / Next 导航、静态文章 Freshness 元数据/提示，以及从同一数据源生成可见内容与 `FAQPage` JSON-LD 的可选 FAQ。自动重定向仍未实现。
+v0.3.1 保留 v0.3.0 的文章体验，并加固两个在生产验证中发现的通用边界：JSON-LD 会安全序列化到 HTML script 元素，Pagefind 会从当前文章索引正文中排除跨文章导航与非内容 UI。自动重定向仍未实现。
 
-当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
+当前实现状态以及后续候选方向见 **[Feature Matrix](feature-matrix.md)**。
 
 ## 来源与署名
 

@@ -89,6 +89,8 @@ Add `faq` only when the article has useful questions that are genuinely answered
 
 There is no separate JSON-LD-only FAQ field and no duplicated structured-data authoring step. If `faq` is absent, the article renders no FAQ section and no `FAQPage` item. FAQ content requires no client fetch, hydration, backend or runtime service.
 
+`FAQPage` remains a valid [Schema.org type](https://schema.org/FAQPage), but AstroPublishKit does not present it as a Google rich-result switch. Google Search stopped showing FAQ rich results on **May 7, 2026**, and Google later removed the FAQ rich-result documentation. Google's current [structured data guidelines](https://developers.google.com/search/docs/appearance/structured-data/sd-policies) also require structured data to represent reader-visible page content and explicitly state that correct structured data does not guarantee a rich result. AstroPublishKit therefore never emits schema-only FAQ: the visible accordion and JSON-LD always come from the same `faq` values. Ordinary blogs—and, under Google's current behavior, any site—should not treat FAQ rich results as an expected benefit. Check the official [Google Search documentation changelog](https://developers.google.com/search/updates) and [supported structured data gallery](https://developers.google.com/search/docs/appearance/structured-data/search-gallery) for current Google Search eligibility.
+
 ## Related Posts
 
 Article pages automatically render up to three related, discoverable published posts when the taxonomy provides a real relationship. Matching uses the existing exact labels: each shared tag is a stronger relevance signal than matching the same category. Drafts, `noindex` posts, the current post and posts with no shared tag/category are excluded. Ties are resolved deterministically by newer publication date and then stable post ID ordering.
@@ -100,6 +102,10 @@ Related Posts add no authoring field or manual relation IDs. They are computed d
 Published discoverable article pages also receive deterministic Previous / Next navigation within the same exact category label. Posts are ordered by publication date descending, with stable post ID ordering for equal dates. **Previous article** points to the immediately older post; **Next article** points to the immediately newer post.
 
 Draft and `noindex` posts do not participate in the timeline, categories are not normalized or mixed, and category boundaries render only the side that exists. No additional frontmatter or manual navigation IDs are required.
+
+## Pagefind article indexing boundaries
+
+For discoverable articles, Pagefind indexes the article title, `description`, body content, Quick Answer / `summary`, and reader-visible FAQ. Related Posts and Previous / Next navigation are intentionally excluded because they contain other articles' titles and can otherwise make the current article match a query that exists only in another post. The comments module and pure interaction/share controls are excluded for the same reason: they are UI, not article content.
 
 ## Article freshness
 
