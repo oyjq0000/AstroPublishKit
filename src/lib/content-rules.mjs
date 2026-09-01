@@ -136,6 +136,139 @@ export function createPostDocument(options = {}) {
   return `${createPostFrontmatter(options)}\n\n${body}\n`;
 }
 
+const PORTABLE_IMAGE_URI_SCHEMES = new Set(["http", "https", "data"]);
+const LOCAL_FILESYSTEM_ROOT = /^(?:\/(?:Users|home)\/[^/]+\/|\/(?:root|private|tmp|var|etc|usr|opt|mnt|media)\/)/i;
+
+function markdownDestination(value) {
+  const source = String(value ?? "").trim();
+  if (!source) return "";
+
+  if (source.startsWith("<")) {
+    const end = source.indexOf(">");
+    return end === -1 ? source.slice(1) : source.slice(1, end);
+  }
+
+  let depth = 0;
+  let escaped = false;
+  for (let index = 0; index < source.length; index += 1) {
+    const character = source[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (character === "(") {
+      depth += 1;
+      continue;
+    }
+    if (character === ")" && depth > 0) {
+      depth -= 1;
+      continue;
+    }
+    if (/\s/.test(character) && depth === 0) return source.slice(0, index);
+  }
+  return source;
+}
+
+export function markdownImages(source) {
+  const text = String(source ?? "");
+  const images = [];
+  let cursor = 0;
+
+  while (cursor < text.length) {
+    const start = text.indexOf("![", cursor);
+    if (start === -1) break;
+    if (start > 0 && text[start - 1] === "\\") {
+      cursor = start + 2;
+      continue;
+    }
+
+    let altEnd = start + 2;
+    let escaped = false;
+    for (; altEnd < text.length; altEnd += 1) {
+      const character = text[altEnd];
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (character === "\\") {
+        escaped = true;
+        continue;
+      }
+      if (character === "]") break;
+    }
+    if (altEnd >= text.length || text[altEnd + 1] !== "(") {
+      cursor = altEnd + 1;
+      continue;
+    }
+
+    const destinationStart = altEnd + 2;
+    let destinationEnd = destinationStart;
+    let nestedDepth = 0;
+    let quote = "";
+    let angle = false;
+    escaped = false;
+    for (; destinationEnd < text.length; destinationEnd += 1) {
+      const character = text[destinationEnd];
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (character === "\\") {
+        escaped = true;
+        continue;
+      }
+      if (angle) {
+        if (character === ">") angle = false;
+        continue;
+      }
+      if (quote) {
+        if (character === quote) quote = "";
+        continue;
+      }
+      if (character === "<") {
+        angle = true;
+        continue;
+      }
+      if (character === '"' || character === "'") {
+        quote = character;
+        continue;
+      }
+      if (character === "(") {
+        nestedDepth += 1;
+        continue;
+      }
+      if (character === ")") {
+        if (nestedDepth === 0) break;
+        nestedDepth -= 1;
+      }
+    }
+    if (destinationEnd >= text.length) break;
+
+    images.push({
+      alt: text.slice(start + 2, altEnd),
+      src: markdownDestination(text.slice(destinationStart, destinationEnd)),
+    });
+    cursor = destinationEnd + 1;
+  }
+
+  return images;
+}
+
+export function isPortableImageSource(value) {
+  const source = String(value ?? "").trim();
+  if (!source) return true;
+  if (/^[A-Za-z]:[\\/]/.test(source) || source.startsWith("\\")) return false;
+  if (LOCAL_FILESYSTEM_ROOT.test(source)) return false;
+
+  const scheme = source.match(/^([A-Za-z][A-Za-z0-9+.-]*):/);
+  if (!scheme) return true;
+  return PORTABLE_IMAGE_URI_SCHEMES.has(scheme[1].toLowerCase());
+}
+
 export function extractFrontmatter(source) {
   const match = String(source ?? "").match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   return match ? match[1] : null;
