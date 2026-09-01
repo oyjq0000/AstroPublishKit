@@ -11,7 +11,7 @@ const { posts } = Astro.props;
 
 {
   posts.length > 0 && (
-    <section class="related-posts" aria-labelledby="related-posts-heading" data-related-posts>
+    <section class="related-posts" aria-labelledby="related-posts-heading" data-related-posts data-pagefind-ignore>
       <h2 id="related-posts-heading">Related posts</h2>
       <div class="related-post-list">
         {posts.map((post) => (

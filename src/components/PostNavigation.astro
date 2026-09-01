@@ -12,7 +12,7 @@ const { previous, next } = Astro.props;
 
 {
   (previous || next) && (
-    <nav class="post-navigation" aria-label="Article navigation" data-post-navigation>
+    <nav class="post-navigation" aria-label="Article navigation" data-post-navigation data-pagefind-ignore>
       {previous && (
         <a class="post-navigation-link" data-post-navigation-previous href={postUrl(previous)}>
           <span>Previous article</span>
