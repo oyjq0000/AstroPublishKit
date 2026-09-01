@@ -90,4 +90,4 @@ Leaving optional integration variables empty keeps the related scripts out of th
 
 ## What configuration does not try to do
 
-v0.1.x does not expose a large theme system. Replace CSS or components directly when you need a different visual system; keep the configuration focused on site identity and publishing behavior.
+v0.2.0 does not expose a large theme system. Replace CSS or components directly when you need a different visual system; keep the configuration focused on site identity and publishing behavior.
