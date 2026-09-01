@@ -18,6 +18,15 @@ const posts = defineCollection({
     title: z.string().min(POST_TITLE_MIN_LENGTH).max(POST_TITLE_MAX_LENGTH),
     description: z.string().min(POST_DESCRIPTION_MIN_LENGTH).max(POST_DESCRIPTION_MAX_LENGTH),
     summary: z.string().min(POST_SUMMARY_MIN_LENGTH).max(POST_SUMMARY_MAX_LENGTH).optional(),
+    faq: z
+      .array(
+        z.object({
+          question: z.string().trim().min(1),
+          answer: z.string().trim().min(1),
+        }),
+      )
+      .min(1)
+      .optional(),
     date: z.coerce.date(),
     lastModified: z.coerce.date().optional(),
     category: z.string().min(1).default(DEFAULT_POST_CATEGORY),

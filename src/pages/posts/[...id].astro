@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BackToTop from "../../components/BackToTop.astro";
+import Faq from "../../components/Faq.astro";
 import FreshnessNotice from "../../components/FreshnessNotice.astro";
 import Giscus from "../../components/Giscus.astro";
 import PostNavigation from "../../components/PostNavigation.astro";
@@ -10,6 +11,7 @@ import Share from "../../components/Share.astro";
 import Toc from "../../components/Toc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { adjacentPostsFor, freshnessFor, isPreviewablePost, relatedPostsFor } from "../../lib/posts.mjs";
+import { faqPageJsonLd } from "../../lib/seo.mjs";
 import { estimateReadingMinutes, slugify } from "../../lib/text.mjs";
 import { absolutePageUrl, withTrailingSlash } from "../../lib/urls.mjs";
 import kit from "../../../astro-publish-kit.config.mjs";
@@ -44,6 +46,7 @@ const articleLd = {
   publisher: { "@type": "Organization", name: kit.site.title },
   ...(post.data.cover ? { image: new URL(post.data.cover.src, `${kit.site.url}/`).href } : {}),
 };
+const faqLd = faqPageJsonLd(post.data.faq);
 const breadcrumbLd = {
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -63,7 +66,7 @@ const breadcrumbLd = {
   publishedTime={post.data.date}
   modifiedTime={post.data.lastModified || post.data.date}
   tags={post.data.tags}
-  jsonLd={[articleLd, breadcrumbLd]}
+  jsonLd={[articleLd, breadcrumbLd, ...(faqLd ? [faqLd] : [])]}
 >
   <article
     class="shell article-shell"
@@ -106,7 +109,10 @@ const breadcrumbLd = {
     </header>
     <div class="article-layout">
       <aside class="article-aside"><Toc headings={headings} /></aside>
-      <div class="prose"><Content /></div>
+      <div class="prose">
+        <Content />
+        {post.data.faq && <Faq items={post.data.faq} />}
+      </div>
     </div>
     <footer class="article-footer">
       <ul class="tag-row" aria-label="Tags">

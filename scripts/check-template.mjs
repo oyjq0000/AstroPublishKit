@@ -83,6 +83,24 @@ Synthetic freshness regression content.
 `,
   );
   fs.writeFileSync(
+    path.join(temp, "src/content/posts/faq.md"),
+    `---
+title: "FAQ fixture"
+description: "A synthetic article used to verify visible FAQ content and matching FAQPage structured data."
+date: 2026-08-25
+category: "FAQ"
+tags: ["FAQ"]
+faq:
+  - question: "What does this FAQ fixture verify?"
+    answer: "It verifies that visible FAQ content and structured data share one source."
+  - question: "Does the FAQ need client JavaScript?"
+    answer: "No. It is rendered as static HTML with native details elements."
+---
+
+Synthetic FAQ regression content.
+`,
+  );
+  fs.writeFileSync(
     path.join(temp, "src/content/posts/freshness-stale.md"),
     `---
 title: "Freshness stale fixture"
@@ -184,6 +202,48 @@ Synthetic stale-content regression content.
   }
   if (!updatedArticleHtml.includes('datetime="2026-01-01T00:00:00.000Z"')) {
     errors.push("posts/freshness-updated/index.html is missing the lastModified time datetime value");
+  }
+
+  const faqArticleFile = path.join(dist, "posts/faq/index.html");
+  const faqArticleHtml = fs.readFileSync(faqArticleFile, "utf8");
+  if (!faqArticleHtml.includes("data-faq")) {
+    errors.push("posts/faq/index.html is missing the visible FAQ section");
+  }
+  for (const text of [
+    "What does this FAQ fixture verify?",
+    "It verifies that visible FAQ content and structured data share one source.",
+    "Does the FAQ need client JavaScript?",
+    "No. It is rendered as static HTML with native details elements.",
+  ]) {
+    if (!faqArticleHtml.includes(text)) errors.push(`posts/faq/index.html is missing visible FAQ text: ${text}`);
+  }
+  const faqJsonText = faqArticleHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+  if (!faqJsonText) {
+    errors.push("posts/faq/index.html is missing structured data");
+  } else {
+    const faqGraph = JSON.parse(faqJsonText);
+    const faqPage = faqGraph["@graph"]?.find((item) => item["@type"] === "FAQPage");
+    if (!faqPage) {
+      errors.push("posts/faq/index.html is missing FAQPage structured data");
+    } else {
+      const pairs = faqPage.mainEntity?.map((item) => [item.name, item.acceptedAnswer?.text]);
+      if (
+        JSON.stringify(pairs) !==
+        JSON.stringify([
+          [
+            "What does this FAQ fixture verify?",
+            "It verifies that visible FAQ content and structured data share one source.",
+          ],
+          ["Does the FAQ need client JavaScript?", "No. It is rendered as static HTML with native details elements."],
+        ])
+      ) {
+        errors.push("posts/faq/index.html FAQPage data does not match the visible FAQ source");
+      }
+    }
+  }
+  const noFaqHtml = fs.readFileSync(path.join(dist, "posts/getting-started/index.html"), "utf8");
+  if (noFaqHtml.includes("data-faq") || noFaqHtml.includes('"@type":"FAQPage"')) {
+    errors.push("posts/getting-started/index.html unexpectedly renders FAQ content or FAQPage data");
   }
 
   const staleArticleFile = path.join(dist, "posts/freshness-stale/index.html");

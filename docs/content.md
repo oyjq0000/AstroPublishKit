@@ -46,6 +46,9 @@ A complete example is:
 title: "A useful, specific title"
 description: "A standalone summary for readers and search results."
 summary: "A concise direct answer shown near the top of the article."
+faq:
+  - question: "Does the FAQ require client JavaScript?"
+    answer: "No. It is rendered as static HTML from article frontmatter."
 date: 2026-08-31
 lastModified: 2026-08-31
 category: "Engineering"
@@ -68,6 +71,7 @@ You do not need to include every optional field in every article.
 - `title`: required, 1–120 characters. The article route renders it as the page H1; do not add another Markdown H1 in the body.
 - `description`: required, 20–240 characters. It is reused for page metadata and article previews; the content checker recommends 50–160 characters when practical.
 - `summary`: optional plain text, 20–500 characters when present. It renders as a visible **Quick answer** block near the top of the article. Keep it concise and answer-oriented; it does not replace `description` and is not required for every post.
+- `faq`: optional non-empty array of objects with non-empty plain-text `question` and `answer` values. One source renders both the reader-facing FAQ and its `FAQPage` JSON-LD.
 - `date`: required publication date. Use `YYYY-MM-DD` in source frontmatter for a predictable human-readable format.
 - `lastModified`: optional. Use `YYYY-MM-DD`; it must not be earlier than `date`. When omitted, metadata and freshness fall back to `date`. A later calendar date renders visible **Updated** metadata.
 - `category`: one broad section for the article. The default is `General`.
@@ -78,6 +82,12 @@ You do not need to include every optional field in every article.
 - `author`: optional single-post author name override. When omitted, `site.author.name` from the main config is used.
 - `lang`: defaults to `en` and remains article metadata only in v0.2.0. It does not enable multilingual routes, translated UI, fallback behavior or hreflang.
 - `cover`: optional object containing a public root-relative `src` and non-empty `alt` text.
+
+## FAQ
+
+Add `faq` only when the article has useful questions that are genuinely answered on the page. Each item contains one plain-text `question` and one plain-text `answer`. The article template renders those items as native `<details>` accordions and maps the same array into `FAQPage` structured data during the static build.
+
+There is no separate JSON-LD-only FAQ field and no duplicated structured-data authoring step. If `faq` is absent, the article renders no FAQ section and no `FAQPage` item. FAQ content requires no client fetch, hydration, backend or runtime service.
 
 ## Related Posts
 
