@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BackToTop from "../../components/BackToTop.astro";
+import FreshnessNotice from "../../components/FreshnessNotice.astro";
 import Giscus from "../../components/Giscus.astro";
 import PostNavigation from "../../components/PostNavigation.astro";
 import QuickAnswer from "../../components/QuickAnswer.astro";
@@ -8,7 +9,7 @@ import RelatedPosts from "../../components/RelatedPosts.astro";
 import Share from "../../components/Share.astro";
 import Toc from "../../components/Toc.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { adjacentPostsFor, isPreviewablePost, relatedPostsFor } from "../../lib/posts.mjs";
+import { adjacentPostsFor, freshnessFor, isPreviewablePost, relatedPostsFor } from "../../lib/posts.mjs";
 import { estimateReadingMinutes, slugify } from "../../lib/text.mjs";
 import { absolutePageUrl, withTrailingSlash } from "../../lib/urls.mjs";
 import kit from "../../../astro-publish-kit.config.mjs";
@@ -29,6 +30,7 @@ interface Props {
 const { post, adjacentPosts, relatedPosts } = Astro.props;
 const { Content, headings } = await render(post);
 const minutes = estimateReadingMinutes(post.body ?? "");
+const freshness = freshnessFor(post, new Date());
 const author = post.data.author || kit.site.author.name;
 const canonical = absolutePageUrl(`/posts/${post.id}`, kit.site.url);
 const articleLd = {
@@ -75,6 +77,19 @@ const breadcrumbLd = {
         <time datetime={post.data.date.toISOString()}
           >{post.data.date.toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })}</time
         >
+        {
+          freshness.updatedDate && (
+            <>
+              <span>·</span>
+              <span>
+                Updated{" "}
+                <time datetime={freshness.updatedDate.toISOString()}>
+                  {freshness.updatedDate.toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric" })}
+                </time>
+              </span>
+            </>
+          )
+        }
         <span>·</span>
         <span>{minutes} min read</span>
       </div>
@@ -82,6 +97,7 @@ const breadcrumbLd = {
       <p class="article-deck">{post.data.description}</p>
       <div class="article-byline">By {author}</div>
       {post.data.summary && <QuickAnswer text={post.data.summary} />}
+      {freshness.isStale && <FreshnessNotice />}
       {
         post.data.cover && (
           <img class="article-cover" src={post.data.cover.src} alt={post.data.cover.alt} loading="eager" />

@@ -1,3 +1,29 @@
+import { POST_STALE_AFTER_DAYS } from "./content-rules.mjs";
+
+const DAY_IN_MILLISECONDS = 86_400_000;
+
+export function effectivePostDate(post) {
+  return new Date(post.data.lastModified ?? post.data.date);
+}
+
+export function freshnessFor(post, now) {
+  const publishedDate = new Date(post.data.date);
+  const lastModified = post.data.lastModified ? new Date(post.data.lastModified) : undefined;
+  const effectiveDate = effectivePostDate(post);
+  const currentDate = new Date(now);
+  const sameCalendarDay =
+    lastModified && lastModified.toISOString().slice(0, 10) === publishedDate.toISOString().slice(0, 10);
+  const updatedDate =
+    lastModified && lastModified.valueOf() > publishedDate.valueOf() && !sameCalendarDay ? lastModified : undefined;
+  const ageMilliseconds = currentDate.valueOf() - effectiveDate.valueOf();
+
+  return {
+    effectiveDate,
+    updatedDate,
+    isStale: Number.isFinite(ageMilliseconds) && ageMilliseconds >= POST_STALE_AFTER_DAYS * DAY_IN_MILLISECONDS,
+  };
+}
+
 export function isPublishedPost(post) {
   return !post.data.draft;
 }

@@ -69,7 +69,7 @@ You do not need to include every optional field in every article.
 - `description`: required, 20–240 characters. It is reused for page metadata and article previews; the content checker recommends 50–160 characters when practical.
 - `summary`: optional plain text, 20–500 characters when present. It renders as a visible **Quick answer** block near the top of the article. Keep it concise and answer-oriented; it does not replace `description` and is not required for every post.
 - `date`: required publication date. Use `YYYY-MM-DD` in source frontmatter for a predictable human-readable format.
-- `lastModified`: optional. Use `YYYY-MM-DD`; when omitted, metadata falls back to `date`.
+- `lastModified`: optional. Use `YYYY-MM-DD`; it must not be earlier than `date`. When omitted, metadata and freshness fall back to `date`. A later calendar date renders visible **Updated** metadata.
 - `category`: one broad section for the article. The default is `General`.
 - `tags`: zero or more specific topics. The generator writes a stable inline array.
 - `draft`: defaults to `false` at schema level, while newly generated posts deliberately start as `true`. Draft pages are available by direct URL during `npm run dev` but are excluded from production builds and normal published-content lists.
@@ -90,6 +90,14 @@ Related Posts add no authoring field or manual relation IDs. They are computed d
 Published discoverable article pages also receive deterministic Previous / Next navigation within the same exact category label. Posts are ordered by publication date descending, with stable post ID ordering for equal dates. **Previous article** points to the immediately older post; **Next article** points to the immediately newer post.
 
 Draft and `noindex` posts do not participate in the timeline, categories are not normalized or mixed, and category boundaries render only the side that exists. No additional frontmatter or manual navigation IDs are required.
+
+## Article freshness
+
+Freshness reuses the existing dates rather than adding another authoring field. The effective freshness date is `lastModified || date`. If `lastModified` is on the same calendar day as `date`, the page does not repeat an **Updated** label; if it is on a later day, the article metadata includes the update date.
+
+An article whose effective date is at least 365 days before the build time receives a low-prominence reader-facing freshness notice. The notice says details may have changed rather than declaring the content incorrect. Future effective dates are not treated as stale.
+
+The core calculation is a pure helper that receives an explicit current time, while the article page supplies the build-time clock. There is no backend, client fetch, runtime date API, scheduled crawler or second freshness date field.
 
 ## Draft preview and publishing
 

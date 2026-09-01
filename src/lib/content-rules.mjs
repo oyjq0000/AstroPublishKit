@@ -8,6 +8,7 @@ export const POST_DESCRIPTION_RECOMMENDED_MIN_LENGTH = 50;
 export const POST_DESCRIPTION_RECOMMENDED_MAX_LENGTH = 160;
 export const POST_SUMMARY_MIN_LENGTH = 20;
 export const POST_SUMMARY_MAX_LENGTH = 500;
+export const POST_STALE_AFTER_DAYS = 365;
 export const DEFAULT_POST_CATEGORY = "General";
 export const DEFAULT_POST_LANG = "en";
 export const DEFAULT_POST_DESCRIPTION = "Replace this description with a useful summary of at least twenty characters.";

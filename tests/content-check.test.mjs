@@ -96,6 +96,47 @@ test("check-content enforces the optional summary length when the field is prese
   }
 });
 
+test("check-content blocks lastModified values earlier than date", () => {
+  const root = tempProject();
+  try {
+    fs.writeFileSync(
+      path.join(root, "src/content/posts/invalid-order.md"),
+      postSource("Body copy.", "lastModified: 2026-08-31\n"),
+      "utf8",
+    );
+
+    const result = runContentCheck(root);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /lastModified must not be earlier than date\./);
+    assert.match(result.stdout, /1 error/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("check-content accepts lastModified on the publication date or later", () => {
+  const root = tempProject();
+  try {
+    fs.writeFileSync(
+      path.join(root, "src/content/posts/same-day.md"),
+      postSource("Body copy.", "lastModified: 2026-09-01\n"),
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(root, "src/content/posts/later.md"),
+      postSource("Body copy.", "lastModified: 2026-09-02\n"),
+      "utf8",
+    );
+
+    const result = runContentCheck(root);
+    assert.equal(result.status, 0, result.stderr);
+    assert.doesNotMatch(result.stderr, /lastModified must not be earlier than date\./);
+    assert.match(result.stdout, /0 errors/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("check-content accepts portable Markdown image sources in .md", () => {
   const root = tempProject();
   try {
