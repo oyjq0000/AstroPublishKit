@@ -293,7 +293,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-Current `main` now contains the planned v0.3.0 article feature set: optional Summary / Quick Answer, deterministic Related Posts, same-category Previous / Next navigation, static article freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. The package version remains 0.2.1 until a separate release PR; redirect automation is still not included.
+v0.3.0 ships the planned article experience: optional Summary / Quick Answer, deterministic Related Posts, same-category Previous / Next navigation, static article freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. Redirect automation is still not included.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 
