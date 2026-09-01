@@ -50,7 +50,7 @@ Status legend:
 | Existing-site migration checklist        | ✅ Implemented  | v0.2.1                 | Generic content, image, URL/SEO, discovery and final-verification guidance.                        |
 | Quick Answer / Summary                   | ✅ Implemented  | v0.3.0                 | Optional validated `summary` field rendered as a concise reader-facing article block.              |
 | Related posts                            | ✅ Implemented  | v0.3.0                 | Deterministic static ranking from exact shared tags/category; no unrelated recent fallback.        |
-| Previous / next article                  | ⏳ Planned      | v0.3.0+                | Candidate same-category navigation by date.                                                        |
+| Previous / next article                  | ✅ Implemented  | v0.3.0                 | Deterministic same-category discoverable timeline by date, with stable ID tie-breaks.              |
 | FAQ + FAQPage JSON-LD                    | ⏳ Planned      | v0.3.0+                | Visible FAQ and structured data should share one source.                                           |
 | Gallery + lightbox                       | ⏳ Planned      | v0.3.0+                | Not part of v0.2.0.                                                                                |
 | Reading progress                         | ⏳ Planned      | v0.3.0+                | Candidate progressive enhancement.                                                                 |
@@ -88,7 +88,7 @@ Targeted hardening from real migration validation: portable Markdown image-sourc
 
 ### v0.3.0+
 
-Current v0.3.0 development includes the optional Summary / Quick Answer block and deterministic static Related Posts. Remaining candidates include previous/next navigation, FAQ/freshness helpers, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
+Current v0.3.0 development includes the optional Summary / Quick Answer block, deterministic static Related Posts and same-category Previous / Next navigation. Remaining candidates include FAQ/freshness helpers, reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
 
 ## Product boundary
 

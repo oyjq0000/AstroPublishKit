@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  adjacentPostsFor,
   filterPostsByCategory,
   filterPostsByTag,
   isDiscoverablePost,
@@ -143,5 +144,66 @@ test("related posts default to three results and do not mutate input", () => {
   assert.deepEqual(
     relatedPostsFor(current, posts, 2).map((item) => item.id),
     ["four", "three"],
+  );
+});
+
+test("adjacent posts stay within the exact category and exclude non-discoverable candidates", () => {
+  const current = post("current", "2026-04-01", { category: "Guides" });
+  const posts = [
+    post("newer", "2026-05-01", { category: "Guides" }),
+    current,
+    post("older", "2026-03-01", { category: "Guides" }),
+    post("other-category", "2026-03-15", { category: "guides" }),
+    post("draft", "2026-03-20", { category: "Guides", draft: true }),
+    post("noindex", "2026-03-25", { category: "Guides", noindex: true }),
+  ];
+
+  const adjacent = adjacentPostsFor(current, posts);
+  assert.equal(adjacent.previous?.id, "older");
+  assert.equal(adjacent.next?.id, "newer");
+});
+
+test("adjacent posts expose only the available side at category boundaries", () => {
+  const newest = post("newest", "2026-05-01", { category: "Guides" });
+  const middle = post("middle", "2026-04-01", { category: "Guides" });
+  const oldest = post("oldest", "2026-03-01", { category: "Guides" });
+  const posts = [middle, oldest, newest];
+
+  assert.deepEqual(
+    { previous: adjacentPostsFor(newest, posts).previous?.id, next: adjacentPostsFor(newest, posts).next?.id },
+    { previous: "middle", next: undefined },
+  );
+  assert.deepEqual(
+    { previous: adjacentPostsFor(oldest, posts).previous?.id, next: adjacentPostsFor(oldest, posts).next?.id },
+    { previous: undefined, next: "middle" },
+  );
+});
+
+test("adjacent posts use deterministic id ordering for equal dates", () => {
+  const current = post("middle", "2026-04-01", { category: "Guides" });
+  const posts = [
+    post("zeta", "2026-04-01", { category: "Guides" }),
+    current,
+    post("alpha", "2026-04-01", { category: "Guides" }),
+  ];
+
+  const adjacent = adjacentPostsFor(current, posts);
+  assert.equal(adjacent.previous?.id, "zeta");
+  assert.equal(adjacent.next?.id, "alpha");
+});
+
+test("adjacent-post ranking does not mutate input and returns empty neighbors when current is not discoverable", () => {
+  const current = post("current", "2026-04-01", { category: "Guides", noindex: true });
+  const posts = Object.freeze([
+    post("older", "2026-03-01", { category: "Guides" }),
+    current,
+    post("newer", "2026-05-01", { category: "Guides" }),
+  ]);
+  const original = posts.map((item) => item.id);
+
+  assert.deepEqual(adjacentPostsFor(current, posts), { previous: undefined, next: undefined });
+  assert.deepEqual(
+    posts.map((item) => item.id),
+    original,
   );
 });

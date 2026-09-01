@@ -42,6 +42,32 @@ try {
   );
 
   run(["run", "new-post", "--", "template-smoke"]);
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/navigation-middle.md"),
+    `---
+title: "Navigation middle fixture"
+description: "A synthetic published article used to verify deterministic previous and next article navigation."
+date: 2026-08-20
+category: "Getting Started"
+tags: ["Navigation"]
+---
+
+Synthetic navigation regression content.
+`,
+  );
+  fs.writeFileSync(
+    path.join(temp, "src/content/posts/navigation-older.md"),
+    `---
+title: "Navigation older fixture"
+description: "An older synthetic article used to verify the previous edge of article navigation."
+date: 2026-08-10
+category: "Getting Started"
+tags: ["Navigation"]
+---
+
+Synthetic navigation regression content.
+`,
+  );
   run(["run", "build:production"], { SITE_URL: fakeSiteUrl });
 
   const dist = path.join(temp, "dist");
@@ -79,6 +105,48 @@ try {
     }
     if (relatedSection.includes(`/posts/${currentId}/`)) {
       errors.push(`posts/${currentId}/index.html includes its own URL inside Related posts`);
+    }
+  }
+
+  const navigationExpectations = [
+    {
+      page: "posts/navigation-middle/index.html",
+      previousHref: "/posts/navigation-older/",
+      nextHref: "/posts/getting-started/",
+    },
+    {
+      page: "posts/getting-started/index.html",
+      previousHref: "/posts/navigation-middle/",
+      nextHref: undefined,
+    },
+    {
+      page: "posts/navigation-older/index.html",
+      previousHref: undefined,
+      nextHref: "/posts/navigation-middle/",
+    },
+  ];
+  for (const expectation of navigationExpectations) {
+    const articleFile = path.join(dist, expectation.page);
+    const html = fs.readFileSync(articleFile, "utf8");
+    const navigation = html.match(/<nav[^>]*data-post-navigation[^>]*>[\s\S]*?<\/nav>/)?.[0];
+    if (!navigation) {
+      errors.push(`${expectation.page} is missing article navigation`);
+      continue;
+    }
+    if (
+      expectation.previousHref &&
+      !navigation.includes(`data-post-navigation-previous href="${expectation.previousHref}"`)
+    ) {
+      errors.push(`${expectation.page} is missing previous article link ${expectation.previousHref}`);
+    }
+    if (!expectation.previousHref && navigation.includes("data-post-navigation-previous")) {
+      errors.push(`${expectation.page} unexpectedly renders a previous article link`);
+    }
+    if (expectation.nextHref && !navigation.includes(`data-post-navigation-next href="${expectation.nextHref}"`)) {
+      errors.push(`${expectation.page} is missing next article link ${expectation.nextHref}`);
+    }
+    if (!expectation.nextHref && navigation.includes("data-post-navigation-next")) {
+      errors.push(`${expectation.page} unexpectedly renders a next article link`);
     }
   }
 
