@@ -293,7 +293,7 @@ docs/                           写作、内容、配置、质量检查和部署
 
 ## 当前范围
 
-当前 `main` 已包含计划中的 v0.3.0 文章功能集：可选 Summary / Quick Answer、确定性的 Related Posts、同分类 Previous / Next 导航、静态文章 Freshness 元数据/提示，以及从同一数据源生成可见内容与 `FAQPage` JSON-LD 的可选 FAQ。package 版本仍保持 0.2.1，等待独立 release PR；自动重定向仍未实现。
+v0.3.0 已发布计划中的文章体验功能：可选 Summary / Quick Answer、确定性的 Related Posts、同分类 Previous / Next 导航、静态文章 Freshness 元数据/提示，以及从同一数据源生成可见内容与 `FAQPage` JSON-LD 的可选 FAQ。自动重定向仍未实现。
 
 当前实现状态以及 v0.3.0+ 候选方向见 **[Feature Matrix](feature-matrix.md)**。
 

@@ -86,9 +86,9 @@ Authoring workflow improvements without adding a backend: guided and non-interac
 
 Targeted hardening from real migration validation: portable Markdown image-source checks and a generic existing-site migration checklist. This does not add redirect automation, URL-preserving migration or new article UI features.
 
-### v0.3.0+
+### v0.3.0 — Article Experience
 
-Current v0.3.0 development includes the optional Summary / Quick Answer block, deterministic static Related Posts, same-category Previous / Next navigation, build-time article freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. Remaining candidates include reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
+Reader-facing article improvements without a backend: optional Summary / Quick Answer, deterministic static Related Posts, same-category Previous / Next navigation, build-time freshness metadata/notices, and optional FAQ with matching `FAQPage` JSON-LD. Remaining candidates stay outside this release, including reading progress, gallery/lightbox, full i18n, dynamic OG generation, ads/sponsor/affiliate integrations, cookie consent, Mermaid, LaTeX, richer author profiles and generic AI-assisted authoring workflows.
 
 ## Product boundary
 
