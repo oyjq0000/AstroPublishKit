@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = process.cwd();
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "astro-publish-kit-template-"));
-const npm = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmExecPath = process.env.npm_execpath;
 const fakeSiteUrl = "https://template-smoke.test";
 const injectedFaqValue = '</script><script id="apk-validation-injected">injected</script>';
 
@@ -20,7 +20,8 @@ function copyFilter(source) {
 }
 
 function run(args, env = {}) {
-  execFileSync(npm, args, {
+  if (!npmExecPath) throw new Error("check-template must be run through npm.");
+  execFileSync(process.execPath, [npmExecPath, ...args], {
     cwd: temp,
     env: { ...process.env, ...env },
     stdio: "inherit",
@@ -72,7 +73,8 @@ async function searchPagefind(dist, queries) {
 
 try {
   fs.cpSync(root, temp, { recursive: true, filter: copyFilter });
-  fs.symlinkSync(path.join(root, "node_modules"), path.join(temp, "node_modules"), "dir");
+  const nodeModulesLinkType = process.platform === "win32" ? "junction" : "dir";
+  fs.symlinkSync(path.join(root, "node_modules"), path.join(temp, "node_modules"), nodeModulesLinkType);
   fs.writeFileSync(path.join(temp, "astro-publish-kit.config.mjs"), fakeConfig);
   fs.writeFileSync(
     path.join(temp, "public/favicon.svg"),
