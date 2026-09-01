@@ -79,6 +79,12 @@ You do not need to include every optional field in every article.
 - `lang`: defaults to `en` and remains article metadata only in v0.2.0. It does not enable multilingual routes, translated UI, fallback behavior or hreflang.
 - `cover`: optional object containing a public root-relative `src` and non-empty `alt` text.
 
+## Related Posts
+
+Article pages automatically render up to three related, discoverable published posts when the taxonomy provides a real relationship. Matching uses the existing exact labels: each shared tag is a stronger relevance signal than matching the same category. Drafts, `noindex` posts, the current post and posts with no shared tag/category are excluded. Ties are resolved deterministically by newer publication date and then stable post ID ordering.
+
+Related Posts add no authoring field or manual relation IDs. They are computed during the static build and rendered as normal article links, with no backend, client fetch or AI recommendation service. If no related post qualifies, the block is omitted entirely rather than falling back to recent posts.
+
 ## Draft preview and publishing
 
 Keep a work-in-progress article as:

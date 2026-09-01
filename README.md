@@ -105,6 +105,7 @@ Migrating an existing site? See **[Existing blog → AstroPublishKit migration c
 - responsive light/dark interface with mobile navigation
 - posts, categories, tags, archive, reading time and article metadata
 - optional per-article Summary / Quick Answer block
+- deterministic build-time Related Posts from exact shared tags and category
 - Pagefind static search
 - table of contents, sharing and back-to-top
 - Callout, Accordion and YouTube MDX primitives
@@ -171,6 +172,7 @@ A few semantics are worth making explicit:
 
 - `category` is one broad section; `tags` are zero or more specific topics.
 - `summary` is optional plain text for a visible Quick Answer block; it is separate from `description`, which still serves metadata and listings.
+- Related Posts require no extra frontmatter: discoverable published posts are ranked from exact shared tags and category at build time, with no backend, AI recommendation service or manual related-post IDs.
 - `author` is optional. When omitted, the site-level author is used; when set, it overrides the author for that post.
 - `lang` is article metadata only in v0.2.0. It does **not** enable multilingual routing, translated UI, fallback behavior, or hreflang.
 - `draft: true` is previewable by direct URL only during `npm run dev`; production output does not generate the page.
@@ -195,19 +197,19 @@ No additional preview wrapper is required; these two existing modes have distinc
 
 `npm run check` is the single local and CI release gate.
 
-| Check                    | Purpose                                                           |
-| ------------------------ | ----------------------------------------------------------------- |
-| `npm run typecheck`      | Astro / TypeScript correctness                                    |
-| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                  |
-| `npm run format:check`   | Prettier verification without modifying files                     |
-| `npm run test`           | URL, content, taxonomy, authoring, text and SEO regression tests  |
-| `npm run check:config`   | generic site/config/integration validation                        |
-| `npm run check:content`  | content conventions, image URI portability and editorial feedback |
-| `npm run build`          | final static output + Pagefind index                              |
-| `npm run check:links`    | offline validation of generated internal page links               |
-| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`       |
-| `npm run check:safety`   | common secret patterns and accidentally tracked environment files |
-| `npm run check:template` | fake-user build and generated-site identity residue scan          |
+| Check                    | Purpose                                                             |
+| ------------------------ | ------------------------------------------------------------------- |
+| `npm run typecheck`      | Astro / TypeScript correctness                                      |
+| `npm run lint`           | ESLint for JS, MJS, TS and Astro                                    |
+| `npm run format:check`   | Prettier verification without modifying files                       |
+| `npm run test`           | URL, content, taxonomy, related-post, authoring, text and SEO tests |
+| `npm run check:config`   | generic site/config/integration validation                          |
+| `npm run check:content`  | content conventions, image URI portability and editorial feedback   |
+| `npm run build`          | final static output + Pagefind index                                |
+| `npm run check:links`    | offline validation of generated internal page links                 |
+| `npm run check:sitemap`  | sitemap origin, pages, exclusions, duplicates and `lastmod`         |
+| `npm run check:safety`   | common secret patterns and accidentally tracked environment files   |
+| `npm run check:template` | fake-user build and generated-site identity residue scan            |
 
 CI runs `npm ci` followed by `npm run check`. See **[Quality checks](docs/quality-checks.md)** for blocking errors, non-blocking warnings and production smoke checks.
 
@@ -285,7 +287,7 @@ docs/                           Writing, content, configuration, quality and dep
 
 ## Scope
 
-Current `main` builds on v0.2.1 with an optional Summary / Quick Answer field and article block. Related Posts, Previous / Next, FAQ and redirect automation are still not included.
+Current `main` builds toward v0.3.0 with optional Summary / Quick Answer and deterministic Related Posts. Previous / Next, Freshness, FAQ and redirect automation are still not included.
 
 See **[Feature matrix](feature-matrix.md)** for current implementation status and v0.3.0+ candidates.
 

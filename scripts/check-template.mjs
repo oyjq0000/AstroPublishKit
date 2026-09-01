@@ -59,6 +59,29 @@ try {
       errors.push(`${relative} contains AstroPublishKit outside an explicitly allowed demo article`);
     }
   }
+  const demoRelations = [
+    ["getting-started", "publishing-workflow"],
+    ["publishing-workflow", "getting-started"],
+  ];
+  for (const [currentId, relatedId] of demoRelations) {
+    const articleFile = path.join(dist, "posts", currentId, "index.html");
+    const html = fs.readFileSync(articleFile, "utf8");
+    const relatedSection = html.match(/<section[^>]*data-related-posts[^>]*>[\s\S]*?<\/section>/)?.[0];
+    if (!relatedSection) {
+      errors.push(`posts/${currentId}/index.html is missing the Related posts section`);
+      continue;
+    }
+    if (!relatedSection.includes("Related posts")) {
+      errors.push(`posts/${currentId}/index.html is missing the Related posts heading`);
+    }
+    if (!relatedSection.includes(`/posts/${relatedId}/`)) {
+      errors.push(`posts/${currentId}/index.html is missing related link /posts/${relatedId}/`);
+    }
+    if (relatedSection.includes(`/posts/${currentId}/`)) {
+      errors.push(`posts/${currentId}/index.html includes its own URL inside Related posts`);
+    }
+  }
+
   if (errors.length) {
     console.error(errors.join("\n"));
     process.exitCode = 1;
